@@ -36,7 +36,7 @@ public class Pitching : MonoBehaviour
 
 	public void Shoot()
 	{
-		//StraightBall();
+		StraightBall();
 	}
 
     public void StraightBall()

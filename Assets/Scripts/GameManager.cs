@@ -11,6 +11,14 @@ public enum BattingState
 	Idle,
 }
 
+
+public enum Mode
+{
+	PitchMode,
+	BatMode
+}
+
+[Serializable]
 public class TeamStat
 {
 	public string teamName;
@@ -28,6 +36,8 @@ public class GameManager : MonoSingleton<GameManager>
 
 	public BattingState State => _state;
 
+	public Mode gameMode = Mode.PitchMode;
+
 	public TeamStat CurrentStat => currentTeam;
 
 	private TeamStat currentTeam;
@@ -39,11 +49,29 @@ public class GameManager : MonoSingleton<GameManager>
 	private TeamStat secoundTeam = new TeamStat();
 
 	public event Action<CountEnum> onChangeCount;
+	public event Action<Mode> onChangeGameMode;
+
 	public GameObject ballObject;
+
+	private bool isChange = false;
 
 	private void Start()
 	{
 		StartTeam();
+		ChangeMode(Mode.PitchMode);
+	}
+
+	private void Update()
+	{
+		if(Input.GetKeyDown(KeyCode.C))
+		{
+			if(!isChange)
+				ChangeMode(Mode.BatMode);
+			else
+				ChangeMode(Mode.PitchMode);
+
+			isChange = !isChange;
+		}
 	}
 
 	public void StartTeam()
@@ -55,9 +83,11 @@ public class GameManager : MonoSingleton<GameManager>
 
 		currentTeam = firstTeam;
 	}
-	public void EndTeam()
-	{
 
+	public void ChangeMode(Mode mode)
+	{
+		gameMode = mode;
+		onChangeGameMode?.Invoke(gameMode);
 	}
 
 	public void ChangeState(BattingState state)
