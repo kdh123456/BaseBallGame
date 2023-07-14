@@ -32,8 +32,11 @@ public class Ball : MonoBehaviour
 
 	public void Shoot(Vector3 shootVec, Vector3 rotationVec, float speed, float rpmSpeed)
 	{
+		shootVec.y = 0;
 		_rb.AddForce(shootVec.normalized * speed);
 		_rb.angularVelocity = rotationVec * speed;
+		ShootVec = shootVec;
+		changeSpeed = rpmSpeed;
 
 		GameManager.Instance.ChangeState(BattingState.Pitching);
 		_isShoot = true;

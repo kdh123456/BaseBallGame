@@ -13,8 +13,12 @@ public class Pitching : MonoBehaviour
 	[SerializeField]
 	private Animator ballAnimator;
 
-	private Vector3 vec;
+	[SerializeField]
+	private GameObject _pitchingVec;
 
+	private Vector3 vec;
+	private Vector3 vecNormal;
+	private Vector3 shootVec;
 	private void Start()
 	{
 		vec = transform.position;
@@ -32,6 +36,8 @@ public class Pitching : MonoBehaviour
 		{
 			ballAnimator.SetBool("Pitching", true);
 		}
+
+		Debug.DrawLine(shootVec, vecNormal);
     }
 
 	public void Shoot()
@@ -42,12 +48,17 @@ public class Pitching : MonoBehaviour
     public void StraightBall()
     {
 		GameObject obj = Instantiate(ballInstance).gameObject;
+		ShootVec.transform.position = new Vector3(ShootVec.transform.position.x, _pitchingVec.transform.position.y + 0.9f, ShootVec.transform.position.z);
+		vecNormal = (_pitchingVec.transform.position - ShootVec.transform.position);
 		obj.transform.position = ShootVec.transform.position;
+
 		Ball ball = obj.GetComponent<Ball>();
+
 		if (ball)
 		{
-			ball.Shoot(Vector3.forward, Vector3.left, 100f, 10f);
+			ball.Shoot(vecNormal, Vector3.left, 100f, 5f);
 		}
+		shootVec = obj.transform.position;
 
 		GameManager.Instance.ballObject = obj;
 	}
@@ -55,22 +66,26 @@ public class Pitching : MonoBehaviour
     private void CurveBall()
     {
 		GameObject obj = Instantiate(ballInstance).gameObject;
+		ShootVec.transform.position = new Vector3(ShootVec.transform.position.x, _pitchingVec.transform.position.y + 2f, ShootVec.transform.position.z);
+		vecNormal = (_pitchingVec.transform.position - ShootVec.transform.position);
 		obj.transform.position = ShootVec.transform.position;
 		Ball ball = obj.GetComponent<Ball>();
 		if (ball)
 		{
-			ball.Shoot(Vector3.forward, Vector3.right, 100f, 10f);
+			ball.Shoot(vecNormal, Vector3.right, 100f, 2f);
 		}
 	}
 
     private void SliderBall()
     {
 		GameObject obj = Instantiate(ballInstance).gameObject;
-		obj.transform.position = ShootVec.transform.position;
+		ShootVec.transform.position = new Vector3(ShootVec.transform.position.x, _pitchingVec.transform.position.y + 1.75f, ShootVec.transform.position.z);
+		vecNormal = (_pitchingVec.transform.position - ShootVec.transform.position);
+		obj.transform.position = ShootVec.transform.position + new Vector3(0.75f,0,0);
 		Ball ball = obj.GetComponent<Ball>();
 		if (ball)
 		{
-			ball.Shoot(Vector3.forward, Vector3.down + Vector3.right, 100f, 10f);
+			ball.Shoot(vecNormal, Vector3.down, 100f, 5f);
 		}
 
 		GameManager.Instance.ballObject = obj;

@@ -9,14 +9,10 @@ public class PitchingSelector : MonoBehaviour
 
 	private void Update()
 	{
-		float xHori = Input.GetAxis("Horizontal");
-		float yVerti = Input.GetAxis("Vertical");
+		Vector3 vec = obj.transform.localPosition;
+		float xHori = Input.GetAxis("Horizontal") * Time.deltaTime;
+		float yVerti = Input.GetAxis("Vertical") * Time.deltaTime;
 
-		float x = obj.transform.position.x + xHori;
-		float y = obj.transform.position.y + yVerti;
-
-		obj.transform.localPosition = new Vector3(Mathf.Clamp(x, -0.5f, 0.5f), Mathf.Clamp(y, -0.5f, 0.5f), obj.transform.position.z);
+		obj.transform.localPosition = new Vector3(Mathf.Clamp(vec.x + xHori, -0.5f, 0.5f), Mathf.Clamp(vec.y + yVerti, -0.5f, 0.5f), obj.transform.position.z);
 	}
-
-
 }
