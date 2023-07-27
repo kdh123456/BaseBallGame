@@ -9,6 +9,7 @@ public enum CountEnum
 	Ball,
 	Out,
 	Reset,
+	OutReset
 }
 
 public class CountPanel : MonoBehaviour
@@ -28,6 +29,7 @@ public class CountPanel : MonoBehaviour
 	{
 		GameManager.Instance.onChangeCount += CountUp;
 		GameManager.Instance.onChangeCount += ResetImage;
+		GameManager.Instance.onChangeCount += OutResetImage;
 		_countImage = GetComponentsInChildren<Image>();
 	}
 
@@ -41,7 +43,22 @@ public class CountPanel : MonoBehaviour
 		if (reset != CountEnum.Reset)
 			return;
 
+		if (countenum == CountEnum.Out)
+			return;
+
 		foreach (var item in _countImage) 
+		{
+			item.color = _resetColor;
+		}
+		_count = 0;
+	}
+
+	private void OutResetImage(CountEnum reset)
+	{
+		if (reset != CountEnum.OutReset)
+			return;
+
+		foreach (var item in _countImage)
 		{
 			item.color = _resetColor;
 		}

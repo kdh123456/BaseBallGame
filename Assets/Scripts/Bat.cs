@@ -4,6 +4,12 @@ using UnityEngine;
 
 public class Bat : MonoBehaviour
 {
+    [SerializeField]
+    private Transform rotation;
+
+	public Transform left;
+	public Transform right;
+
     private Rigidbody _rb;
 
     void Start()
@@ -11,9 +17,8 @@ public class Bat : MonoBehaviour
 		_rb  = GetComponent<Rigidbody>();
 	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	private void Update()
+	{
+		//this.transform.rotation = rotation.rotation;
+	}
 }

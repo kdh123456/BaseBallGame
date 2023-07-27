@@ -59,6 +59,8 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		StartTeam();
 		ChangeMode(Mode.PitchMode);
+
+		onChangeCount += ChangeTeam;
 	}
 
 	private void Update()
@@ -95,12 +97,17 @@ public class GameManager : MonoSingleton<GameManager>
 		_state = state;
 	}
 
-	public void ChangeTeam()
+	public void ChangeTeam(CountEnum count)
 	{
-		currentTeam.outCount = 0;
-		currentTeam.strikeCount = 0;
-		currentTeam.ballCount = 0;
-		currentTeam = currentTeam == firstTeam ? secoundTeam : firstTeam;
+		if (count == CountEnum.Out && currentTeam.outCount == 3)
+		{
+			onChangeCount?.Invoke(CountEnum.OutReset);
+			currentTeam.outCount = 0;
+			currentTeam.strikeCount = 0;
+			currentTeam.ballCount = 0;
+			currentTeam = currentTeam == firstTeam ? secoundTeam : firstTeam;
+			ChangeMode(gameMode == Mode.PitchMode ? Mode.BatMode : Mode.PitchMode);
+		}
 	}
 
 	public void ChangeTeamBatter()
@@ -113,7 +120,8 @@ public class GameManager : MonoSingleton<GameManager>
 
 	public void AddStrike()
 	{
-		if(currentTeam.strikeCount == 2)
+		_state = BattingState.Pitch;
+		if (currentTeam.strikeCount == 2)
 		{
 			currentTeam.outCount++;
 			onChangeCount?.Invoke(CountEnum.Out);

@@ -16,9 +16,13 @@ public class Pitching : MonoBehaviour
 	[SerializeField]
 	private GameObject _pitchingVec;
 
+	[SerializeField]
+	private PitchSelector _pitchSelector;
+
+	private PitchType _type;
 	private Vector3 vec;
 	private Vector3 vecNormal;
-	private Vector3 shootVec;
+
 	private void Start()
 	{
 		vec = transform.position;
@@ -28,21 +32,26 @@ public class Pitching : MonoBehaviour
     {
 		if(Input.GetKeyDown(KeyCode.Space)) 
 		{
-			this.transform.position = vec;
-			GameManager.Instance.ChangeState(BattingState.Pitch);
+			Shoot();
 		}
-
-		if(GameManager.Instance.State==BattingState.Pitch)
-		{
-			ballAnimator.SetBool("Pitching", true);
-		}
-
-		Debug.DrawLine(shootVec, vecNormal);
     }
 
 	public void Shoot()
 	{
-		StraightBall();
+		_type = _pitchSelector.Type;
+		this.transform.position = vec;
+		GameManager.Instance.ChangeState(BattingState.Pitch);
+		ballAnimator.SetBool("Pitching", true);
+	}
+
+	public void ShootBall()
+	{
+		if (_type == PitchType.FourSeamFastBall)
+			StraightBall();
+		else if (_type == PitchType.SliderBall)
+			SliderBall();
+		else
+			CurveBall();
 	}
 
     public void StraightBall()
@@ -56,9 +65,8 @@ public class Pitching : MonoBehaviour
 
 		if (ball)
 		{
-			ball.Shoot(vecNormal, Vector3.left, 100f, 5f);
+			ball.Shoot(vecNormal, Vector3.left, 50f, 8f);
 		}
-		shootVec = obj.transform.position;
 
 		GameManager.Instance.ballObject = obj;
 	}

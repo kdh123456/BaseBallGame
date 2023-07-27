@@ -66,7 +66,7 @@ public class Ball : MonoBehaviour
 
 	private void OnCollisionEnter(Collision collision)
 	{
-		if(collision.gameObject.CompareTag("Ground") && GameManager.Instance.State != BattingState.Batting)
+		if(collision.gameObject.CompareTag("Ground") && GameManager.Instance.State == BattingState.Pitching)
 		{
 			GameManager.Instance.AddBall();
 		}
