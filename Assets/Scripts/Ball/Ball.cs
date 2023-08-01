@@ -25,17 +25,13 @@ public class Ball : MonoBehaviour
 		_rb = GetComponent<Rigidbody>();
 	}
 
-	private void Start()
-	{
-		GameManager.Instance.ballObject = this.gameObject;
-	}
-
 	public void Shoot(Vector3 shootVec, Vector3 rotationVec, float speed, float rpmSpeed)
 	{
 		shootVec.y = 0;
 		_rb.AddForce(shootVec.normalized * speed);
 		_rb.angularVelocity = rotationVec * speed;
 		ShootVec = shootVec;
+		_speed = speed;
 		changeSpeed = rpmSpeed;
 
 		GameManager.Instance.ChangeState(BattingState.Pitching);
@@ -62,13 +58,5 @@ public class Ball : MonoBehaviour
 	{
 		_isShoot = false;
 		GameManager.Instance.ChangeState(BattingState.Batting);
-	}
-
-	private void OnCollisionEnter(Collision collision)
-	{
-		if(collision.gameObject.CompareTag("Ground") && GameManager.Instance.State == BattingState.Pitching)
-		{
-			GameManager.Instance.AddBall();
-		}
 	}
 }

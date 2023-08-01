@@ -34,7 +34,7 @@ public class BatCapsuleFollower : MonoBehaviour
 
 	public void OnCollisionEnter(Collision collision)
 	{
-		if(collision.gameObject.tag == "Ball")
+		if(collision.gameObject.tag == "Ball" && GameManager.Instance.State == BattingState.Pitching)
 		{
 			collision.gameObject.GetComponent<Ball>().Hit();
 

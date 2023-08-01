@@ -15,7 +15,7 @@ public class Zone : MonoBehaviour
 
 	public void OnTriggerEnter(Collider other)
 	{
-		if (other.CompareTag("Ball"))
+		if (other.CompareTag("Ball") && GameManager.Instance.State == BattingState.Pitching)
 		{
 			if (isStrike)
 				strike.Strike(other.transform);

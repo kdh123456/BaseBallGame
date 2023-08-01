@@ -65,10 +65,9 @@ public class Pitching : MonoBehaviour
 
 		if (ball)
 		{
-			ball.Shoot(vecNormal, Vector3.left, 50f, 8f);
+			ball.Shoot(vecNormal, Vector3.left, 100f, 5f);
 		}
 
-		GameManager.Instance.ballObject = obj;
 	}
 
     private void CurveBall()
@@ -95,7 +94,5 @@ public class Pitching : MonoBehaviour
 		{
 			ball.Shoot(vecNormal, Vector3.down, 100f, 5f);
 		}
-
-		GameManager.Instance.ballObject = obj;
 	}
 }

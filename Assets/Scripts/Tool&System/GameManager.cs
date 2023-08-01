@@ -5,6 +5,7 @@ using UnityEngine;
 
 public enum BattingState
 {
+	Bat,
 	Batting,
 	Pitching,
 	Pitch,
@@ -50,10 +51,14 @@ public class GameManager : MonoSingleton<GameManager>
 
 	public event Action<CountEnum> onChangeCount;
 	public event Action<Mode> onChangeGameMode;
-
-	public GameObject ballObject;
+	public event Action<BattingState> onStateChange;
 
 	private bool isChange = false;
+
+	[SerializeField]
+	private GameObject _runnerObject;
+
+	public GameObject RunnerObject => _runnerObject;
 
 	private void Start()
 	{
@@ -95,6 +100,7 @@ public class GameManager : MonoSingleton<GameManager>
 	public void ChangeState(BattingState state)
 	{
 		_state = state;
+		onStateChange?.Invoke(state);
 	}
 
 	public void ChangeTeam(CountEnum count)
@@ -129,6 +135,7 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.strikeCount++;
+		_state = BattingState.Idle;
 		onChangeCount?.Invoke(CountEnum.Strike);
 	}
 
@@ -140,6 +147,7 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.ballCount++;
+		_state = BattingState.Idle;
 		onChangeCount?.Invoke(CountEnum.Ball);
 	}
 }
