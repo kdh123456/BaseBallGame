@@ -35,6 +35,7 @@ public class Ball : MonoBehaviour
 		changeSpeed = rpmSpeed;
 
 		GameManager.Instance.ChangeState(BattingState.Pitching);
+		GameManager.Instance.SetBall(this.transform.gameObject);
 		_isShoot = true;
 	}
 
@@ -58,5 +59,10 @@ public class Ball : MonoBehaviour
 	{
 		_isShoot = false;
 		GameManager.Instance.ChangeState(BattingState.Batting);
+	}
+
+	private void OnCollisionEnter(Collision collision)
+	{
+		_isShoot = false;
 	}
 }

@@ -19,6 +19,12 @@ public enum Mode
 	BatMode
 }
 
+public enum Count
+{
+	Strike,
+	Ball
+}
+
 [Serializable]
 public class TeamStat
 {
@@ -59,6 +65,10 @@ public class GameManager : MonoSingleton<GameManager>
 	private GameObject _runnerObject;
 
 	public GameObject RunnerObject => _runnerObject;
+
+	private GameObject _ballObject;
+
+	public GameObject BallObject => _ballObject;
 
 	private void Start()
 	{
@@ -149,5 +159,11 @@ public class GameManager : MonoSingleton<GameManager>
 		currentTeam.ballCount++;
 		_state = BattingState.Idle;
 		onChangeCount?.Invoke(CountEnum.Ball);
+	}
+
+	public void SetBall(GameObject obj)
+	{
+		_ballObject = obj;
+		Debug.Log("ball");
 	}
 }
