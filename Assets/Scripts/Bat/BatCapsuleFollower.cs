@@ -11,9 +11,12 @@ public class BatCapsuleFollower : MonoBehaviour
 	[SerializeField]
 	private float _sensitivity = 100f;
 
+	private CapsuleCollider _capsuleCollider;
+
 	private void Awake()
 	{
 		_rigidbody = GetComponent<Rigidbody>();
+		_capsuleCollider = GetComponent<CapsuleCollider>();
 	}
 
 	private void FixedUpdate()
@@ -27,16 +30,19 @@ public class BatCapsuleFollower : MonoBehaviour
 		transform.position = _batFollower.transform.position;
 	}
 
-	public void SetFollowTarget(BatCapsule batFollower)
+	public void SetFollowTarget(BatCapsule batFollower, bool isVirtual = false)
 	{
 		_batFollower = batFollower;
+		if(isVirtual)
+		{
+			_capsuleCollider.enabled = false;
+		}
 	}
 
 	public void OnCollisionEnter(Collision collision)
 	{
 		if(collision.gameObject.tag == "Ball" && GameManager.Instance.State == BattingState.Pitching)
 		{
-			collision.gameObject.GetComponent<Ball>().Hit();
 
 			Vector3 conVel = _rigidbody.velocity;
 			Vector3 conAnguarval = _rigidbody.angularVelocity;
@@ -46,6 +52,8 @@ public class BatCapsuleFollower : MonoBehaviour
 
 			collision.rigidbody.velocity = conVel + -ballVel;
 			collision.rigidbody.angularVelocity = conAnguarval + -ballAnguarval;
+
+			collision.gameObject.GetComponent<Ball>().Hit();
 		}
 	}
 }

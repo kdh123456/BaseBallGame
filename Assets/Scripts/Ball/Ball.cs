@@ -20,13 +20,19 @@ public class Ball : MonoBehaviour
 
 	private bool _isShoot;
 
+	private Vector3 cvec;
+	private Vector3 rbvec;
+
+	public Vector3 battingVec => rbvec;
+
 	void Awake()
 	{
 		_rb = GetComponent<Rigidbody>();
 	}
 
-	public void Shoot(Vector3 shootVec, Vector3 rotationVec, float speed, float rpmSpeed)
+	public void Shoot(Vector3 shootVec, Vector3 rotationVec, float speed, float rpmSpeed, bool isPitcher = false)
 	{
+		_rb.useGravity = true;
 		shootVec.y = 0;
 		_rb.AddForce(shootVec.normalized * speed);
 		_rb.angularVelocity = rotationVec * speed;
@@ -34,9 +40,19 @@ public class Ball : MonoBehaviour
 		_speed = speed;
 		changeSpeed = rpmSpeed;
 
-		GameManager.Instance.ChangeState(BattingState.Pitching);
+		if (isPitcher)
+			GameManager.Instance.ChangeState(BattingState.Pitching);
+
 		GameManager.Instance.SetBall(this.transform.gameObject);
 		_isShoot = true;
+	}
+
+	private void Update()
+	{
+		Vector3 vec = rbvec;
+		vec = vec * 100;
+		vec.y = 1;
+		Debug.DrawLine(cvec, vec);
 	}
 
 	private void FixedUpdate()
@@ -55,9 +71,22 @@ public class Ball : MonoBehaviour
 		_rb.AddForce(ShootVec.normalized * _speed);
 	}
 
+	public void Muzzle(Transform trans)
+	{
+		_isShoot = false;
+		_rb.useGravity = false;
+		_rb.velocity = Vector3.zero;
+		this.transform.SetParent(trans);
+		this.transform.localPosition = Vector3.zero;
+	}
+
 	public void Hit()
 	{
 		_isShoot = false;
+
+		cvec = this.transform.position;
+		rbvec = _rb.velocity;
+		rbvec.Normalize();
 		GameManager.Instance.ChangeState(BattingState.Batting);
 	}
 

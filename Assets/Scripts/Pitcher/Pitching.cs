@@ -65,7 +65,7 @@ public class Pitching : MonoBehaviour
 
 		if (ball)
 		{
-			ball.Shoot(vecNormal, Vector3.left, 100f, 5f);
+			ball.Shoot(vecNormal, Vector3.left, 100f, 5f, true);
 		}
 
 	}
@@ -79,7 +79,7 @@ public class Pitching : MonoBehaviour
 		Ball ball = obj.GetComponent<Ball>();
 		if (ball)
 		{
-			ball.Shoot(vecNormal, Vector3.right, 100f, 2f);
+			ball.Shoot(vecNormal, Vector3.right, 100f, 2f, true);
 		}
 	}
 
@@ -92,7 +92,7 @@ public class Pitching : MonoBehaviour
 		Ball ball = obj.GetComponent<Ball>();
 		if (ball)
 		{
-			ball.Shoot(vecNormal, Vector3.down, 100f, 5f);
+			ball.Shoot(vecNormal, Vector3.down, 100f, 5f , true);
 		}
 	}
 }

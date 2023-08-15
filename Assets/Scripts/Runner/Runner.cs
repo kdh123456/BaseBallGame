@@ -50,6 +50,7 @@ public class Runner : MonoBehaviour
 			currentbase.ExitBase();
 		}
 		Base nextbase = BaseControll.Instance.BaseReturn(runIndex++);
+		nextbase.BaseRunRunner(this);
 		runObjectVec = nextbase.transform.position;
 		isRun = true;
 		_navMeshAgent.SetDestination(runObjectVec);

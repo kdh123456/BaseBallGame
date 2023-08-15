@@ -7,6 +7,7 @@ public enum BattingState
 {
 	Bat,
 	Batting,
+	Defending,
 	Pitching,
 	Pitch,
 	Idle,
@@ -145,7 +146,7 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.strikeCount++;
-		_state = BattingState.Idle;
+		ChangeState(BattingState.Idle);
 		onChangeCount?.Invoke(CountEnum.Strike);
 	}
 
@@ -157,8 +158,15 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.ballCount++;
-		_state = BattingState.Idle;
+		ChangeState(BattingState.Idle);
 		onChangeCount?.Invoke(CountEnum.Ball);
+	}
+
+	public void AddOut()
+	{
+		currentTeam.outCount++;
+		onChangeCount?.Invoke(CountEnum.Out);
+		ChangeState(BattingState.Idle);
 	}
 
 	public void SetBall(GameObject obj)

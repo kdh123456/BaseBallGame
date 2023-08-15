@@ -26,13 +26,44 @@ public class DefendController : MonoBehaviour
 
 	private void Start()
 	{
-		GameManager.Instance.onStateChange += StartFind;
+		//GameManager.Instance.onStateChange += StartFind;
+		//GameManager.Instance.onStateChange += EndFind;
+		GameManager.Instance.onStateChange += BattingAndFindShotDistancObjects;
 	}
 
-	private void StartFind(BattingState state)
+	//private void StartFind(BattingState state)
+	//{
+	//	if (state == BattingState.Batting)
+	//		_catch = true;
+	//}
+
+	//private void EndFind(BattingState state)
+	//{
+	//	if (state == BattingState.Defending)
+	//		_catch = false;
+	//}
+
+	private void BattingAndFindShotDistancObjects(BattingState state)
 	{
 		if (state == BattingState.Batting)
-			_catch = true;
+		{
+			Ball ball = GameManager.Instance.BallObject.GetComponent<Ball>();
+			Vector3 normalVec = ball.battingVec;
+			Debug.Log(normalVec);
+
+			foreach (Defender defen in _defenders)
+			{
+				Vector3 defenVec = defen.transform.position;
+				Debug.Log(defenVec.z);
+				Vector3 defenExpectMinuVec = new Vector3(normalVec.x * Mathf.Abs(defenVec.z), 1, defenVec.z);
+				if (Vector3.Distance(defenVec, defenExpectMinuVec) < 10)
+				{
+					GameObject obj = new GameObject("targetPos");
+					obj.transform.position = defenExpectMinuVec;
+					defen.TargetChase(obj);
+				}
+			}
+		}
 	}
 
 	private Defender FindShotDistanceObject(GameObject obj)
@@ -53,12 +84,12 @@ public class DefendController : MonoBehaviour
 		return defender;
 	}
 
-	private void Update()
-	{
-		if (_catch)
-		{
-			chasingObject = FindShotDistanceObject(GameManager.Instance.BallObject);
-			chasingObject.TargetChase(GameManager.Instance.BallObject);
-		}
-	}
+	//private void Update()
+	//{
+	//	if (_catch)
+	//	{
+	//		chasingObject = FindShotDistanceObject(GameManager.Instance.BallObject);
+	//		chasingObject.TargetChase(GameManager.Instance.BallObject);
+	//	}
+	//}
 }

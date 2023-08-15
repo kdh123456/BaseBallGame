@@ -62,8 +62,6 @@ public class Catcher : MonoBehaviour
 		{
 			_animator.SetIKPosition(AvatarIKGoal.LeftHand , _catchVec.transform.position);
 			_animator.SetIKPositionWeight(AvatarIKGoal.LeftHand, 1);
-			//_animator.SetIKRotation(AvatarIKGoal.LeftHand, _catchVec.transform.rotation);
-			//_animator.SetIKRotationWeight(AvatarIKGoal.LeftHand, 1);
 		}
 	}
 }

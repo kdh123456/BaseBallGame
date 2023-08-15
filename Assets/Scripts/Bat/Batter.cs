@@ -11,6 +11,9 @@ public class Batter : MonoBehaviour
 	private Bat bat;
 
 	[SerializeField]
+	private Bat _virtualBat;
+
+	[SerializeField]
 	private GameObject _batPos;
 
 	Vector3 vec;
@@ -35,6 +38,12 @@ public class Batter : MonoBehaviour
 		}
 		
 		bat.transform.position = _batPos.transform.position + (Vector3.right /2);
+	}
+
+	private void Batting()
+	{
+		
+		_virtualBat.transform.position = _batPos.transform.position;
 	}
 
 	private void Run(BattingState state)
