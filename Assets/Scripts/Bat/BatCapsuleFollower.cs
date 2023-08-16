@@ -25,7 +25,9 @@ public class BatCapsuleFollower : MonoBehaviour
 		_rigidbody.transform.rotation = transform.rotation;
 
 		_velocity = (destination - _rigidbody.transform.position) * _sensitivity;
+
 		_rigidbody.velocity = _velocity;
+
 		transform.rotation = _batFollower.transform.rotation;
 		transform.position = _batFollower.transform.position;
 	}
@@ -41,7 +43,7 @@ public class BatCapsuleFollower : MonoBehaviour
 
 	public void OnCollisionEnter(Collision collision)
 	{
-		if(collision.gameObject.tag == "Ball" && GameManager.Instance.State == BattingState.Pitching)
+		if(collision.gameObject.tag == "Ball" && GameManager.Instance.State == BattingState.Bat)
 		{
 
 			Vector3 conVel = _rigidbody.velocity;
@@ -53,7 +55,14 @@ public class BatCapsuleFollower : MonoBehaviour
 			collision.rigidbody.velocity = conVel + -ballVel;
 			collision.rigidbody.angularVelocity = conAnguarval + -ballAnguarval;
 
+			Debug.Log("Hit");
+
+			Debug.Log(collision.rigidbody.velocity);
+			Debug.Log(collision.rigidbody.angularVelocity);
+
+			Debug.Break();
 			collision.gameObject.GetComponent<Ball>().Hit();
+
 		}
 	}
 }

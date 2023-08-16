@@ -25,7 +25,6 @@ public class Base : MonoBehaviour
 
 	private Defender _defender;
 
-
 	private void OnTriggerEnter(Collider other)
 	{
 		CheckRunnerAndDefender(other);
@@ -99,9 +98,8 @@ public class Base : MonoBehaviour
 	{
 		if(_isHomeBase)
 		{
-			//GameManager.Instance.
-			//µÊ¡° ±‚πÕ
-			runer.gameObject.SetActive(false);
+			GameManager.Instance.AddScore();
+			runer?.gameObject?.SetActive(false);
 		}
 		_haveRunner = true;
 		_inSideRunner = runer;
@@ -124,5 +122,5 @@ public class Base : MonoBehaviour
 	public float BaseRunnerDistance()
 	{
 		return Vector3.Distance(this.transform.position, _comeRunner.transform.position);
-	}
+	}                                                                            
 }

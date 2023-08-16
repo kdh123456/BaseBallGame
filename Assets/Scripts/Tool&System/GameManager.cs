@@ -29,12 +29,14 @@ public enum Count
 [Serializable]
 public class TeamStat
 {
-	public string teamName;
+	//public string teamName;
 	public int teamScore = 0;
 	public int playerIndex = 1;
 	public int outCount = 0;
 	public int strikeCount = 0;
 	public int ballCount = 0;
+
+	public TeamEnum teamName;
 }
 
 public class GameManager : MonoSingleton<GameManager>
@@ -59,6 +61,7 @@ public class GameManager : MonoSingleton<GameManager>
 	public event Action<CountEnum> onChangeCount;
 	public event Action<Mode> onChangeGameMode;
 	public event Action<BattingState> onStateChange;
+	public event Action<TeamEnum, int> onAddScore;
 
 	private bool isChange = false;
 
@@ -166,6 +169,13 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		currentTeam.outCount++;
 		onChangeCount?.Invoke(CountEnum.Out);
+		ChangeState(BattingState.Idle);
+	}
+
+	public void AddScore ()
+	{
+		currentTeam.teamScore++;
+		onAddScore?.Invoke(currentTeam.teamName, 1);
 		ChangeState(BattingState.Idle);
 	}
 

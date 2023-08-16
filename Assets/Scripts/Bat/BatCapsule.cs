@@ -13,14 +13,13 @@ public class BatCapsule : MonoBehaviour
 	{
 		var follower = Instantiate(_batCapsuleFollowerPrefab);
 		follower.transform.position = transform.position;
-		
-		if(!bat.isVirtual)
+
+		if (!bat.isVirtual)
 			follower.SetFollowTarget(this);
 		else
-		{
 			follower.SetFollowTarget(this, true);
-		}
-			bat.bodys.Add(follower.GetComponent<Rigidbody>());
+
+		bat.bodys.Add(follower.GetComponent<Rigidbody>());
 	}
 
 	private void Awake()

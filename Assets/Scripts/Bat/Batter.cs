@@ -36,14 +36,13 @@ public class Batter : MonoBehaviour
 			_animator.SetBool("Batting", true);
 			GameManager.Instance.ChangeState(BattingState.Bat);
 		}
-		
-		bat.transform.position = _batPos.transform.position + (Vector3.right /2);
 	}
 
 	private void Batting()
 	{
-		
-		_virtualBat.transform.position = _batPos.transform.position;
+		_virtualBat.gameObject.SetActive(true);
+		_virtualBat.transform.position = _batPos.transform.position + Vector3.right;
+		_virtualBat.vBodys = bat.bodys;
 	}
 
 	private void Run(BattingState state)
