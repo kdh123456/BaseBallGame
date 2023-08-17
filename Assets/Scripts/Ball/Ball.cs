@@ -49,10 +49,11 @@ public class Ball : MonoBehaviour
 
 	private void Update()
 	{
+		rbvec = _rb.velocity;
 		Vector3 vec = rbvec;
-		vec = vec * 100;
+		//vec = vec * 100;
 		vec.y = 1;
-		Debug.DrawLine(cvec, vec);
+		Debug.DrawLine(this.transform.position, this.transform.position + vec);
 	}
 
 	private void FixedUpdate()

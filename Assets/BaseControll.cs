@@ -14,6 +14,39 @@ public class BaseControll : MonoSingleton<BaseControll>
 		return _bases[index];
 	}
 
+	public bool BaseIsEmpty()
+	{
+		foreach(Base bases in _bases)
+		{
+			if (bases._isHomeBase)
+				continue;
+
+			if (bases.HaveRunner || bases.IsBaseCover)
+				continue;
+
+			return true;
+		}
+
+		return false;
+	}
+
+	public List<Base> EmptyBases()
+	{
+		List<Base> baseList = new List<Base>();
+		foreach (Base bases in _bases)
+		{
+			if (bases._isHomeBase)
+				continue;
+
+			if (bases.HaveRunner || bases.IsBaseCover)
+				continue;
+
+			baseList.Add(bases);
+		}
+
+		return baseList;
+	}
+
 	public bool ThrowBaseHave(Base tsBase = null)
 	{
 		bool isThrowBaseHave = false;

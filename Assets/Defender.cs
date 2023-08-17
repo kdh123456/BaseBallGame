@@ -1,11 +1,22 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
+public enum DefenderStateEnum
+{
+	Idle = 0,
+	BaseCover,
+	BallChase,
+	FuturePathChase
+}
+
 public class Defender : MonoBehaviour
 {
+	public Dictionary<DefenderStateEnum, int> weightOfState;
+
 	private Transform trans;
 
 	private GameObject target;
@@ -16,21 +27,25 @@ public class Defender : MonoBehaviour
 	private Ball _haveBall;
 	private Base _thisBase = null;
 
-	private LayerMask baseLayerMask;
+	public bool IsBase => _thisBase != null;
+
+	//private LayerMask baseLayerMask;
 	private LayerMask ballLayerMask;
 
 	private bool _isBallMuzzle = false;
 
-	public Ball HaveBall => _haveBall;
-
 	private Vector3 _originVec;
+
+	private DefenderStateEnum _state;
+
+	public Ball HaveBall => _haveBall;
 
 	private void Start()
 	{
 		_animator = GetComponent<Animator>();
 		_agent = GetComponent<NavMeshAgent>();
 
-		baseLayerMask = LayerMask.GetMask("Base");
+		//baseLayerMask = LayerMask.GetMask("Base");
 		ballLayerMask = LayerMask.GetMask("Ball");
 
 		Transform[] obj = transform.GetComponentsInChildren<Transform>();
@@ -43,6 +58,11 @@ public class Defender : MonoBehaviour
 			}
 		}
 
+		foreach (DefenderStateEnum state in Enum.GetValues(typeof(DefenderStateEnum)))
+		{
+			weightOfState.Add(state, 0);
+		}
+
 		_originVec = this.transform.position;
 	}
 
@@ -53,34 +73,26 @@ public class Defender : MonoBehaviour
 			_animator.SetBool("Chase", false);
 		}
 
-		BaseCoverCheck();
-
 		if (!_isBallMuzzle)
 			BallCheck();
 
+		
+		//BaseCoverCheck();
 	}
 
-	public void TargetChase(GameObject obj)
-	{
-		if (_agent.remainingDistance > 1)
-		{
-			_animator.SetBool("Chase", true);
-		}
-		_agent.SetDestination(obj.transform.position);
-	}
+	//private void BaseCoverCheck()
+	//{
+	//	Collider disCol = DisColliderCheck(baseLayerMask, 10);
 
-	public void BaseIn(Base hbase)
-	{
-		_thisBase = hbase;
-		Debug.Log("BaseIn");
-	}
-
-	public void BaseOut()
-	{
-		_thisBase = null;
-		Debug.Log("BaseOut");
-	}
-
+	//	Base disBase = disCol?.GetComponent<Base>();
+	//	if (disBase == null)
+	//		return;
+	//	if (!disBase.IsBaseCover)
+	//	{
+	//		disBase.BaseCovering();
+	//		target = disBase.gameObject;
+	//	}
+	//}
 	private Collider DisColliderCheck(LayerMask mask, float radius)
 	{
 		Collider[] col = Physics.OverlapSphere(this.transform.position, radius, mask);
@@ -103,18 +115,36 @@ public class Defender : MonoBehaviour
 		return disCol;
 	}
 
-	private void BaseCoverCheck()
+	//여기서 base랑 path이동 그리고 ball이동을 사용한다.
+	public void TargetChase(GameObject obj)
 	{
-		Collider disCol = DisColliderCheck(baseLayerMask, 10);
-
-		Base disBase = disCol?.GetComponent<Base>();
-		if (disBase == null)
-			return;
-		if (!disBase.IsBaseCover)
+		if (_agent.remainingDistance > 1)
 		{
-			disBase.BaseCovering();
-			target = disBase.gameObject;
+			_animator.SetBool("Chase", true);
 		}
+		_agent.SetDestination(obj.transform.position);
+	}
+	public void TargetChaseStop()
+	{
+		if (target != null)
+			_agent.SetDestination(target.transform.position);
+		else
+		{
+			_agent.isStopped = true;
+		_animator.SetBool("Chase", false);
+		}
+
+	}
+
+	public void BaseIn(Base hbase)
+	{
+		_thisBase = hbase;
+		Debug.Log("BaseIn");
+	}
+	public void BaseOut()
+	{
+		_thisBase = null;
+		Debug.Log("BaseOut");
 	}
 
 	private void BallCheck()
@@ -137,18 +167,13 @@ public class Defender : MonoBehaviour
 		Debug.Log("Muzzle");
 	}
 
-	public void TargetChaseStop()
+	public void ThrowCheck()
 	{
-		if (target != null)
-			_agent.SetDestination(target.transform.position);
-		else
-		{
-			_agent.isStopped = true;
-		_animator.SetBool("Chase", false);
-		}
+		_animator.SetBool("Catch", false);
 
+		if (!BaseControll.Instance.ThrowBaseHave(_thisBase))
+			_animator.SetBool("Throw", false);
 	}
-
 	public void Throw()
 	{
 		Vector3 vec = BaseControll.Instance.ThrowBaseReturn().transform.position - trans.position;
@@ -157,24 +182,18 @@ public class Defender : MonoBehaviour
 		_haveBall.Shoot(vec.normalized, Vector3.left, 100f, 5f);
 	}
 
-	public void ThrowCheck()
+	public void DefenderStateChange(DefenderStateEnum defender, GameObject obj)
 	{
-		_animator.SetBool("Catch", false);
-
-		if (!BaseControll.Instance.ThrowBaseHave(_thisBase))
-		{
-			Debug.Log("ThrowFalse");
-			_animator.SetBool("Throw", false);
-			//GameManager.Instance.ChangeState(BattingState.Idle);
-		}
+		_state = defender;
+		TargetChase(obj);
 	}
 
 	private void OnDrawGizmos()
 	{
 		Color color = Color.white;
-		color.a = 0.25f;
-		Gizmos.color = color;
-		Gizmos.DrawSphere(this.transform.position, 10);
+		//color.a = 0.25f;
+		//Gizmos.color = color;
+		//Gizmos.DrawSphere(this.transform.position, 10);
 
 		color = Color.red;
 		color.a = 0.25f;
