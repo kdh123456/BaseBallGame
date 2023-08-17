@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public enum DefendZoneEnum
@@ -50,13 +51,15 @@ public class DefendController : MonoBehaviour
 		if (state == BattingState.Batting)
 			_catch = true;
 	}
-
 	private void EndFind(BattingState state)
 	{
 		if (state == BattingState.Defending)
 			_catch = false;
 	}
 
+	#region 개발중
+
+	//이게 미래 예측
 	private void BattingAndFindShotDistancObjects(BattingState state)
 	{
 		if (state == BattingState.Batting)
@@ -68,13 +71,79 @@ public class DefendController : MonoBehaviour
 			{
 				Vector3 defenVec = defen.transform.position;
 				Vector3 defenExpectMinuVec = new Vector3(_expectedpath.x * Mathf.Abs(defenVec.z), 1, defenVec.z);
+
 				if (Vector3.Distance(defenVec, defenExpectMinuVec) < 10)
 				{
-					GameObject obj = new GameObject("targetPos");
-					obj.transform.position = defenExpectMinuVec;
-					defen.TargetChase(obj);
+					bool isStateHave = defen.weightOfState.ContainsKey(DefenderStateEnum.FuturePathChase);
+					Debug.Log(isStateHave);
+					if(isStateHave)
+					{
+						defen.weightOfState[DefenderStateEnum.FuturePathChase] = (float)Vector3.Distance(defenVec, defenExpectMinuVec);
+						defen.FuturePathSetting(defenExpectMinuVec);
+					}
+					else
+					{
+						Debug.Break();
+					}
 				}
 			}
+		}
+	}
+
+	//공 따라가기
+	private void BallCover()
+	{
+		Defender defender = FindShotDistanceObject(BallObject.gameObject);
+
+		if (defender.HaveBall)
+			defender.TargetChase(BallObject.gameObject);
+
+		return;
+	}
+
+	//이게 베이스 커버
+	private void WeightOfBaseCover()
+	{
+		if (BaseControll.Instance.BaseIsEmpty())
+		{
+			List<Base> bases = BaseControll.Instance.EmptyBases();
+
+			for (int i = 0; i < bases.Count; i++)
+			{
+				Defender defens = null;
+				float minDistance = 999f;
+				foreach (Defender defen in _defenders)
+				{
+					if (defen.IsBase)
+						continue;
+
+					if (defens == null)
+						defens = defen;
+
+					float Distance = Vector3.Distance(defens.transform.position, bases[i].transform.position);
+
+					if (minDistance > Distance)
+					{
+						minDistance = Distance;
+						defens = defen;
+					}
+				}
+
+				defens.weightOfState[DefenderStateEnum.BaseCover] = (float)minDistance;
+				defens.BaseCover(bases[i].gameObject);
+			}
+
+		}
+	}
+
+	#endregion
+
+	private void Update()
+	{
+		if (_catch)
+		{
+			BallCover();
+			WeightOfBaseCover();
 		}
 	}
 
@@ -86,8 +155,13 @@ public class DefendController : MonoBehaviour
 			if (defender == null)
 				defender = defen;
 
+			if (defender.HaveBall)
+				return defen;
+
 			float originObjDis = Vector3.Distance(obj.transform.position, defender.transform.position);
 			float defrenceObjDis = Vector3.Distance(obj.transform.position, defen.transform.position);
+
+			defen.weightOfState[DefenderStateEnum.BallChase] = defrenceObjDis;
 
 			if (originObjDis > defrenceObjDis)
 				defender = defen;
@@ -96,38 +170,13 @@ public class DefendController : MonoBehaviour
 		return defender;
 	}
 
-	private void Update()
+	private void WeightOfBallCover()
 	{
-		if (_catch)
-		{
 
-
-			//Vector3 vec = _expectedpath;
-			//vec.y = 1;
-
-			//if(Vector3.Distance(BallObject.battingVec, vec) > 2)
-			//{
-			//	chasingObject = FindShotDistanceObject(GameManager.Instance.BallObject);
-			//	chasingObject.TargetChase(GameManager.Instance.BallObject);
-			//}
-		}
 	}
 
-	private void WeightOfBaseCover()
+	private void FutturePathChase()
 	{
-		if(BaseControll.Instance.BaseIsEmpty())
-		{
-			List<Base> bases = BaseControll.Instance.EmptyBases();
-			foreach(Defender defen in _defenders)
-			{
-				if (defen.IsBase)
-				{
-					//defen.weightOfState[DefenderStateEnum.BaseCover]
 
-				}
-
-
-			}
-		}
 	}
 }

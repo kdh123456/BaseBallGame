@@ -1,4 +1,4 @@
-using System;
+ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -15,7 +15,7 @@ public enum DefenderStateEnum
 
 public class Defender : MonoBehaviour
 {
-	public Dictionary<DefenderStateEnum, int> weightOfState;
+	public Dictionary<DefenderStateEnum, float> weightOfState = new Dictionary<DefenderStateEnum, float>();
 
 	private Transform trans;
 
@@ -35,6 +35,9 @@ public class Defender : MonoBehaviour
 	private bool _isBallMuzzle = false;
 
 	private Vector3 _originVec;
+	private Vector3 _futurePathVec;
+
+	private GameObject baseCoverObj;
 
 	private DefenderStateEnum _state;
 
@@ -76,7 +79,32 @@ public class Defender : MonoBehaviour
 		if (!_isBallMuzzle)
 			BallCheck();
 
-		
+		float upValue = 9999;
+		foreach(KeyValuePair<DefenderStateEnum, float> value in weightOfState)
+		{
+			if (value.Value == 0)
+				continue;
+
+			if(upValue > value.Value)
+			{
+				upValue = value.Value;
+				_state = value.Key;
+			}
+		}
+
+		switch(_state) 
+		{
+			case DefenderStateEnum.BaseCover:
+				TargetChase(baseCoverObj);
+				baseCoverObj.GetComponent<Base>().BaseCovering();
+				break;
+			case DefenderStateEnum.BallChase:
+				TargetChase(GameManager.Instance.BallObject);
+				break;
+			case DefenderStateEnum.FuturePathChase:
+				FuturePath();
+				break;
+		}
 		//BaseCoverCheck();
 	}
 
@@ -134,6 +162,23 @@ public class Defender : MonoBehaviour
 		_animator.SetBool("Chase", false);
 		}
 
+	}
+
+
+	public void FuturePathSetting(Vector3 vec)
+	{
+		_futurePathVec = vec;
+	}
+	public void FuturePath()
+	{
+		GameObject obj = new GameObject("targetPos");
+		obj.transform.position = _futurePathVec;
+		TargetChase(obj);
+	}
+
+	public void BaseCover(GameObject obj)
+	{
+		baseCoverObj = obj;
 	}
 
 	public void BaseIn(Base hbase)
