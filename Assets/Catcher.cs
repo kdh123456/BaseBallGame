@@ -26,6 +26,9 @@ public class Catcher : MonoBehaviour
 	{
 		if (other.CompareTag("Ball") && GameManager.Instance.State != BattingState.Batting)
 		{
+			if (!other.GetComponent<Ball>().IsShoot)
+				return;
+
 			if (zone.isSktrike)
 				Strike();
 			else if (!zone.isSktrike && GameManager.Instance.State == BattingState.Bat)

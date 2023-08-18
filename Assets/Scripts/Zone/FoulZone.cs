@@ -8,7 +8,7 @@ public class FoulZone : MonoBehaviour
 	{
 		if(other.CompareTag("Ball") && GameManager.Instance.State == BattingState.Batting)
 		{
-			if (GameManager.Instance.CurrentStat.strikeCount <= 1)
+			if (GameManager.Instance.CurrentStat.strikeCount < 2)
 			{
 				GameManager.Instance.AddStrike();
 			}

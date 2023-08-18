@@ -24,6 +24,7 @@ public class Ball : MonoBehaviour
 	private Vector3 rbvec;
 
 	public Vector3 battingVec => rbvec;
+	public bool IsShoot => _isShoot;
 
 	void Awake()
 	{
@@ -88,11 +89,21 @@ public class Ball : MonoBehaviour
 		cvec = this.transform.position;
 		rbvec = _rb.velocity;
 		rbvec.Normalize();
-		GameManager.Instance.ChangeState(BattingState.Batting);
+		Debug.Break();
 	}
 
 	private void OnCollisionEnter(Collision collision)
 	{
 		_isShoot = false;
+
+		if(collision.gameObject.tag == "Ground" && GameManager.Instance.State == BattingState.Bat)
+		{
+			if (GameManager.Instance.CurrentStat.strikeCount < 2)
+			{
+				GameManager.Instance.AddStrike();
+			}
+			else
+				return;
+		}
 	}
 }

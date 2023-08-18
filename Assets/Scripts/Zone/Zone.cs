@@ -17,6 +17,14 @@ public class Zone : MonoBehaviour
 	{
 		if (other.CompareTag("Ball") && GameManager.Instance.State == BattingState.Pitching)
 		{
+			if (!other.GetComponent<Ball>().IsShoot)
+				return;
+
+			Debug.Log(other.GetComponent<Ball>().IsShoot);
+			Debug.Break();
+
+
+			Debug.Log("BallEnter");
 			if (isStrike)
 				strike.Strike(other.transform);
 			else
