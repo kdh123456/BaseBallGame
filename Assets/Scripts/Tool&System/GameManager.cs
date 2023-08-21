@@ -80,6 +80,7 @@ public class GameManager : MonoSingleton<GameManager>
 		ChangeMode(Mode.PitchMode);
 
 		onChangeCount += ChangeTeam;
+		onStateChange += IdleAction;
 	}
 
 	private void Update()
@@ -134,6 +135,7 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		currentTeam.strikeCount = 0;
 		currentTeam.ballCount = 0;
+		Debug.Log("Change");
 		onChangeCount?.Invoke(CountEnum.Reset);
 		currentTeam.playerIndex++;
 	}
@@ -149,7 +151,7 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.strikeCount++;
-		ChangeState(BattingState.Idle);
+		//ChangeState(BattingState.Idle);
 		onChangeCount?.Invoke(CountEnum.Strike);
 	}
 
@@ -161,7 +163,7 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.ballCount++;
-		ChangeState(BattingState.Idle);
+		//ChangeState(BattingState.Idle);
 		onChangeCount?.Invoke(CountEnum.Ball);
 	}
 
@@ -169,19 +171,54 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		currentTeam.outCount++;
 		onChangeCount?.Invoke(CountEnum.Out);
-		ChangeState(BattingState.Idle);
+		//ChangeState(BattingState.Idle);
 	}
 
 	public void AddScore ()
 	{
 		currentTeam.teamScore++;
 		onAddScore?.Invoke(currentTeam.teamName, 1);
-		ChangeState(BattingState.Idle);
+		//ChangeState(BattingState.Idle);
 	}
 
 	public void SetBall(GameObject obj)
 	{
 		_ballObject = obj;
-		Debug.Log("ball");
+	}
+
+	public void IdleAction(BattingState state)
+	{
+		if(state == BattingState.Idle)
+		{
+			StartCoroutine(WaitForMode(1f, gameMode));
+		}
+	}
+
+	private IEnumerator WaitForMode(float timer, Mode mode)
+	{
+		yield return new WaitForSeconds(timer);
+		if (mode == Mode.PitchMode)
+			PitchMode();
+		else
+			BatMode();
+	}
+
+	public void BatMode()
+	{
+		CameraController.Instance.ChangeCameraPos(Mode.BatMode);
+		BattingManager.Instance.BattingReset();
+	}
+
+	public void PitchMode()
+	{
+		CameraController.Instance.ChangeCameraPos(Mode.PitchMode);
+	}
+
+	public void ResetGame(BattingState state)
+	{
+		if (state == BattingState.Idle)
+		{
+			_ballObject = null;
+		}
 	}
 }

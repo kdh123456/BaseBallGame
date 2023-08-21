@@ -22,15 +22,18 @@ public class Runner : MonoBehaviour
 	{
 		animator = GetComponent<Animator>();
 		_navMeshAgent = GetComponent<NavMeshAgent>();
+		GameManager.Instance.onStateChange += (state) =>
+		{
+			if (state == BattingState.Batting)
+			{
+				RunBase();
+			}
+		};
 	}
 
 	private void Start()
 	{
-		GameManager.Instance.onStateChange += (state) =>
-		{
-			if (state == BattingState.Batting)
-				RunBase();
-		};
+
 	}
 
 	private void Update()
@@ -54,5 +57,10 @@ public class Runner : MonoBehaviour
 		runObjectVec = nextbase.transform.position;
 		isRun = true;
 		_navMeshAgent.SetDestination(runObjectVec);
+	}
+
+	public void HomeRun()
+	{
+		RunBase();
 	}
 }

@@ -32,8 +32,6 @@ public class StrikeZone : MonoBehaviour
 		isSktrike = true;
 
 		countEnd = true;
-
-		Debug.Log("Strike");
 	}
 	public void Ball(Transform trans)
 	{
@@ -41,6 +39,5 @@ public class StrikeZone : MonoBehaviour
 			return;
 
 		isSktrike = false;
-		Debug.Log("Ball");
 	}
 }

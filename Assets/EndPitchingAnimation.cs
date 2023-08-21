@@ -21,8 +21,8 @@ public class EndPitchingAnimation : StateMachineBehaviour
 	{
 		animator.SetBool("Pitching", false);
 
-		if (GameManager.Instance.State != BattingState.Batting && GameManager.Instance.State != BattingState.Defending)
-			GameManager.Instance.ChangeState(BattingState.Pitch);
+		//if (GameManager.Instance.State != BattingState.Batting && GameManager.Instance.State != BattingState.Defending)
+		//	GameManager.Instance.ChangeState(BattingState.Pitch);
 	}
 
 	// OnStateMove is called right after Animator.OnAnimatorMove()

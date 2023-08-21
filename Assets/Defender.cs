@@ -1,4 +1,4 @@
- using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
@@ -67,10 +67,14 @@ public class Defender : MonoBehaviour
 		}
 
 		_originVec = this.transform.position;
+
+		GameManager.Instance.onStateChange += ResetDefender;
 	}
 
 	private void Update()
 	{
+		if (GameManager.Instance.State != BattingState.Batting)
+			return;
 		if (_agent.remainingDistance < 2)
 		{
 			_animator.SetBool("Chase", false);
@@ -80,19 +84,19 @@ public class Defender : MonoBehaviour
 			BallCheck();
 
 		float upValue = 9999;
-		foreach(KeyValuePair<DefenderStateEnum, float> value in weightOfState)
+		foreach (KeyValuePair<DefenderStateEnum, float> value in weightOfState)
 		{
 			if (value.Value == 0)
 				continue;
 
-			if(upValue > value.Value)
+			if (upValue > value.Value)
 			{
 				upValue = value.Value;
 				_state = value.Key;
 			}
 		}
 
-		switch(_state) 
+		switch (_state)
 		{
 			case DefenderStateEnum.BaseCover:
 				TargetChase(baseCoverObj);
@@ -159,7 +163,7 @@ public class Defender : MonoBehaviour
 		else
 		{
 			_agent.isStopped = true;
-		_animator.SetBool("Chase", false);
+			_animator.SetBool("Chase", false);
 		}
 
 	}
@@ -184,12 +188,10 @@ public class Defender : MonoBehaviour
 	public void BaseIn(Base hbase)
 	{
 		_thisBase = hbase;
-		Debug.Log("BaseIn");
 	}
 	public void BaseOut()
 	{
 		_thisBase = null;
-		Debug.Log("BaseOut");
 	}
 
 	private void BallCheck()
@@ -208,8 +210,6 @@ public class Defender : MonoBehaviour
 
 		GameManager.Instance.ChangeState(BattingState.Defending);
 		disball.Muzzle(trans);
-
-		Debug.Log("Muzzle");
 	}
 
 	public void ThrowCheck()
@@ -217,7 +217,10 @@ public class Defender : MonoBehaviour
 		_animator.SetBool("Catch", false);
 
 		if (!BaseControll.Instance.ThrowBaseHave(_thisBase))
+		{
 			_animator.SetBool("Throw", false);
+			GameManager.Instance.ChangeState(BattingState.Idle);
+		}
 	}
 	public void Throw()
 	{
@@ -231,6 +234,24 @@ public class Defender : MonoBehaviour
 	{
 		_state = defender;
 		TargetChase(obj);
+	}
+
+	private void ResetDefender(BattingState state)
+	{
+		if (state == BattingState.Idle)
+		{
+			TargetChaseStop();
+			foreach (DefenderStateEnum states in Enum.GetValues(typeof(DefenderStateEnum)))
+			{
+				weightOfState[states] = 0;
+			}
+			_agent.enabled = false;
+
+			this.transform.position = _originVec;
+			if (this.gameObject.name == "2BaseDefender")
+				Debug.Log(this.transform.position);
+			Debug.Break();
+		}
 	}
 
 	private void OnDrawGizmos()

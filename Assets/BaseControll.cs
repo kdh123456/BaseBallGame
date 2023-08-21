@@ -9,6 +9,24 @@ public class BaseControll : MonoSingleton<BaseControll>
 	[SerializeField]
 	private Base[] _bases;
 
+	private Base _homeRunBase;
+
+	public Base HomeRunBase => _homeRunBase;
+
+	public void Start()
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (_bases[i]._isHomeBase)
+			{
+				_homeRunBase = _bases[i];
+				break;
+			}
+		}
+
+		GameManager.Instance.onStateChange += HomeRunEnd;
+	}
+
 	public Base BaseReturn(int index = 1)
 	{
 		return _bases[index];
@@ -16,7 +34,7 @@ public class BaseControll : MonoSingleton<BaseControll>
 
 	public bool BaseIsEmpty()
 	{
-		foreach(Base bases in _bases)
+		foreach (Base bases in _bases)
 		{
 			if (bases._isHomeBase)
 				continue;
@@ -50,7 +68,7 @@ public class BaseControll : MonoSingleton<BaseControll>
 	public bool ThrowBaseHave(Base tsBase = null)
 	{
 		bool isThrowBaseHave = false;
-		foreach(Base curBase in _bases)
+		foreach (Base curBase in _bases)
 		{
 			if (tsBase == curBase)
 				continue;
@@ -58,7 +76,7 @@ public class BaseControll : MonoSingleton<BaseControll>
 			if (!curBase.Running)
 				continue;
 
-			if(curBase.BaseRunnerDistance() > 1)
+			if (curBase.BaseRunnerDistance() > 1)
 			{
 				isThrowBaseHave = true;
 				break;
@@ -94,5 +112,24 @@ public class BaseControll : MonoSingleton<BaseControll>
 		}
 
 		return curBase;
+	}
+
+	public void HomeRun()
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			_bases[i].HomeRun();
+		}
+	}
+
+	private void HomeRunEnd(BattingState state)
+	{
+		if (state == BattingState.Idle)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				_bases[i].HomeRunEnd();
+			}
+		}
 	}
 }

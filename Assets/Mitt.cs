@@ -10,7 +10,6 @@ public class Mitt : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		Debug.Log("ZoneIn");
 		_catcher.Check(other);
 	}
 }

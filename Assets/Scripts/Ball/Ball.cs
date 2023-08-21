@@ -89,7 +89,6 @@ public class Ball : MonoBehaviour
 		cvec = this.transform.position;
 		rbvec = _rb.velocity;
 		rbvec.Normalize();
-		Debug.Break();
 	}
 
 	private void OnCollisionEnter(Collision collision)

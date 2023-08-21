@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
@@ -18,6 +19,10 @@ public class Base : MonoBehaviour
 
 	private bool _baseCover = false;
 	public bool IsBaseCover => _baseCover;
+
+	private bool _isHomeRun = false;
+
+	public Runner runner => _inSideRunner;
 
 	private Runner _inSideRunner;
 
@@ -96,13 +101,33 @@ public class Base : MonoBehaviour
 
 	public void RunSuccess(Runner runer)
 	{
-		if(_isHomeBase)
+			Debug.Log(_isHomeBase);
+			Debug.Log(_isHomeRun);
+		if (_isHomeRun)
+		{
+			if (!_isHomeBase)
+				runer?.HomeRun();
+
+			if(_isHomeBase)
+			{
+				Debug.LogWarning("Change");
+				int count = BaseControll.Instance.EmptyBases().Count;
+				Debug.LogWarning(count);
+				if (count == 0)
+				{
+					Debug.LogWarning("IdleChange");
+					GameManager.Instance.ChangeState(BattingState.Idle);
+				}
+			}
+		}
+		if (_isHomeBase)
 		{
 			GameManager.Instance.AddScore();
 			runer?.gameObject?.SetActive(false);
 		}
 		_haveRunner = true;
 		_inSideRunner = runer;
+
 	}
 
 	private void RunFailed(Runner runer)
@@ -122,5 +147,10 @@ public class Base : MonoBehaviour
 	public float BaseRunnerDistance()
 	{
 		return Vector3.Distance(this.transform.position, _comeRunner.transform.position);
-	}                                                                            
+	}
+
+	public void HomeRun()
+		=> _isHomeRun = true;
+	public void HomeRunEnd()
+	=> _isHomeRun = false;
 }

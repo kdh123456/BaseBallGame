@@ -8,7 +8,6 @@ public class BattingZone : MonoBehaviour
 	{
 		if(other.gameObject.tag == "Ball")
         {
-			Debug.Break();
             GameManager.Instance.ChangeState(BattingState.Batting);
 		}
 	}

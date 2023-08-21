@@ -53,7 +53,7 @@ public class DefendController : MonoBehaviour
 	}
 	private void EndFind(BattingState state)
 	{
-		if (state == BattingState.Defending)
+		if (state == BattingState.Idle)
 			_catch = false;
 	}
 
@@ -75,7 +75,6 @@ public class DefendController : MonoBehaviour
 				if (Vector3.Distance(defenVec, defenExpectMinuVec) < 10)
 				{
 					bool isStateHave = defen.weightOfState.ContainsKey(DefenderStateEnum.FuturePathChase);
-					Debug.Log(isStateHave);
 					if(isStateHave)
 					{
 						defen.weightOfState[DefenderStateEnum.FuturePathChase] = (float)Vector3.Distance(defenVec, defenExpectMinuVec);
@@ -83,7 +82,7 @@ public class DefendController : MonoBehaviour
 					}
 					else
 					{
-						Debug.Break();
+
 					}
 				}
 			}
@@ -168,15 +167,5 @@ public class DefendController : MonoBehaviour
 		}
 
 		return defender;
-	}
-
-	private void WeightOfBallCover()
-	{
-
-	}
-
-	private void FutturePathChase()
-	{
-
 	}
 }

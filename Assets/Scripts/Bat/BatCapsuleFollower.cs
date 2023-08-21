@@ -56,9 +56,6 @@ public class BatCapsuleFollower : MonoBehaviour
 			collision.rigidbody.angularVelocity = conAnguarval + -ballAnguarval;
 
 			collision.gameObject.GetComponent<Ball>().Hit();
-
-			Debug.Log("Hit");
-			Debug.Break();
 		}
 	}
 }
