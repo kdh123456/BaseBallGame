@@ -29,6 +29,9 @@ public class Base : MonoBehaviour
 	private Runner _comeRunner;
 
 	private Defender _defender;
+	private Defend _comeDefender;
+
+	private float coverDefenderDistance = 999f;
 
 	private void OnTriggerEnter(Collider other)
 	{
@@ -96,6 +99,18 @@ public class Base : MonoBehaviour
 	public void BaseCovering() =>
 		_baseCover = true;
 
+	public void BaseCoverSetting(float distance, Defend defend)
+	{
+		if(coverDefenderDistance > distance)
+		{
+			_comeDefender.GetComponent<BaseCoverState>().baseCoverOn = false;
+
+			coverDefenderDistance = distance;
+			defend.GetComponent<BaseCoverState>().baseCoverOn = true;
+			_comeDefender = defend;
+		}
+	}
+
 	public void BaseRunRunner(Runner runner)
 		=> _comeRunner = runner;
 
@@ -153,4 +168,6 @@ public class Base : MonoBehaviour
 		=> _isHomeRun = true;
 	public void HomeRunEnd()
 	=> _isHomeRun = false;
+
+
 }

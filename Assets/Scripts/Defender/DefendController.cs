@@ -39,6 +39,12 @@ public class DefendController : MonoBehaviour
 
 	}
 
+	private Defend _comeDefender;
+	private float coverDefenderDistance = 999f;
+
+	private bool _isBallCover = false;
+	public bool IsBallCover => _isBallCover;
+
 	private void Start()
 	{
 		GameManager.Instance.onStateChange += StartFind;
@@ -137,6 +143,17 @@ public class DefendController : MonoBehaviour
 
 	#endregion
 
+	public void BallCoverSetting(float distance, Defend defend)
+	{
+		if (coverDefenderDistance > distance)
+		{
+			_comeDefender.GetComponent<BallChaseState>().baseCoverOn = false;
+
+			coverDefenderDistance = distance;
+			defend.GetComponent<BallChaseState>().baseCoverOn = true;
+			_comeDefender = defend;
+		}
+	}
 	private void Update()
 	{
 		if (_catch)
