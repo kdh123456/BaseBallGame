@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -19,11 +18,13 @@ public class Defend : MonoBehaviour
 	public Ball HaveBall => _haveBall;
 
 	private Vector3 _firstPosition = Vector3.zero;
+	private Quaternion _quaternion = Quaternion.identity;
 	private NavMeshAgent _agent = null;
 
 	private void Awake()
 	{
 		_firstPosition = transform.position;
+		_quaternion = transform.rotation;
 		_agent = GetComponent<NavMeshAgent>();
 	}
 
@@ -62,6 +63,7 @@ public class Defend : MonoBehaviour
 			_agent.enabled = false;
 			Destroy(_haveBall);
 			this.transform.position = _firstPosition;
+			this.transform.rotation = _quaternion;
 			_agent.enabled = true;
 		}
 	}
