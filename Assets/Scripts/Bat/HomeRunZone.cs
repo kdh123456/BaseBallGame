@@ -9,7 +9,8 @@ public class HomeRunZone : MonoBehaviour
 		if (collision.transform.tag == "Ball"
 			&& GameManager.Instance.State == BattingState.Batting)
 		{
-				BaseControll.Instance.HomeRun();
+			CameraController.Instance.HomeRunCameraSet(RunnerManager.Instance.BattingRunner().gameObject);
+			GameManager.Instance.HomeRun();
 		}
 	}
 }

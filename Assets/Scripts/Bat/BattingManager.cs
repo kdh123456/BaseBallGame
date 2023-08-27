@@ -13,12 +13,13 @@ public class BattingManager : MonoSingleton<BattingManager>
 	{
 		GameManager.Instance.onStateChange += BattingCamera;
 		GameManager.Instance.onStateChange += NextBatter;
+		GameManager.Instance.onStateChange += BattingReset;
 	}
 
-	public void BattingReset()
+	public void BattingReset(BattingState state)
 	{
+		if(state == BattingState.Idle)
 		_batter.gameObject.SetActive(true);
-		CameraController.Instance.CameraReset();
 	}
 
 	private void BattingCamera(BattingState state)
@@ -27,7 +28,7 @@ public class BattingManager : MonoSingleton<BattingManager>
 		{
 			CameraController.Instance.SetCameraPosition(_batCameraPos.transform.position);
 			CameraController.Instance.ChaseCamera(GameManager.Instance.BallObject);
-			CameraController.Instance.ZoomInOutCamera(10);
+			CameraController.Instance.ZoomInOutCamera(30);
 		}
 	}
 

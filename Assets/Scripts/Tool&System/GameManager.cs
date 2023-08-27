@@ -7,7 +7,6 @@ public enum BattingState
 {
 	Bat,
 	Batting,
-	Defending,
 	Pitching,
 	Pitch,
 	Idle,
@@ -62,8 +61,11 @@ public class GameManager : MonoSingleton<GameManager>
 	public event Action<Mode> onChangeGameMode;
 	public event Action<BattingState> onStateChange;
 	public event Action<TeamEnum, int> onAddScore;
+	public event Action onHomeRun;
 
 	private bool isChange = false;
+	private bool _isHomeRun = false;
+	public bool IsHomeRun => _isHomeRun;
 
 	[SerializeField]
 	private GameObject _runnerObject;
@@ -81,13 +83,14 @@ public class GameManager : MonoSingleton<GameManager>
 
 		onChangeCount += ChangeTeam;
 		onStateChange += IdleAction;
+		onStateChange += DelBall;
 	}
 
 	private void Update()
 	{
-		if(Input.GetKeyDown(KeyCode.C))
+		if (Input.GetKeyDown(KeyCode.C))
 		{
-			if(!isChange)
+			if (!isChange)
 				ChangeMode(Mode.BatMode);
 			else
 				ChangeMode(Mode.PitchMode);
@@ -135,7 +138,6 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		currentTeam.strikeCount = 0;
 		currentTeam.ballCount = 0;
-		Debug.Log("Change");
 		onChangeCount?.Invoke(CountEnum.Reset);
 		currentTeam.playerIndex++;
 	}
@@ -151,7 +153,6 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.strikeCount++;
-		//ChangeState(BattingState.Idle);
 		onChangeCount?.Invoke(CountEnum.Strike);
 	}
 
@@ -163,7 +164,6 @@ public class GameManager : MonoSingleton<GameManager>
 			return;
 		}
 		currentTeam.ballCount++;
-		//ChangeState(BattingState.Idle);
 		onChangeCount?.Invoke(CountEnum.Ball);
 	}
 
@@ -171,14 +171,12 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		currentTeam.outCount++;
 		onChangeCount?.Invoke(CountEnum.Out);
-		//ChangeState(BattingState.Idle);
 	}
 
-	public void AddScore ()
+	public void AddScore()
 	{
 		currentTeam.teamScore++;
 		onAddScore?.Invoke(currentTeam.teamName, 1);
-		//ChangeState(BattingState.Idle);
 	}
 
 	public void SetBall(GameObject obj)
@@ -186,32 +184,44 @@ public class GameManager : MonoSingleton<GameManager>
 		_ballObject = obj;
 	}
 
-	public void IdleAction(BattingState state)
+	public void DelBall(BattingState state)
 	{
-		if(state == BattingState.Idle)
-		{
-			StartCoroutine(WaitForMode(1f, gameMode));
-		}
+		if (state == BattingState.Idle)
+			Destroy(_ballObject);
 	}
 
-	private IEnumerator WaitForMode(float timer, Mode mode)
+	public void IdleAction(BattingState state)
 	{
-		yield return new WaitForSeconds(timer);
-		if (mode == Mode.PitchMode)
-			PitchMode();
-		else
-			BatMode();
+		if (state == BattingState.Idle)
+		{
+			if (gameMode == Mode.PitchMode)
+				PitchMode();
+			else
+				BatMode();
+
+			_isHomeRun = false;
+			CameraController.Instance.CameraReset();
+		}
 	}
 
 	public void BatMode()
 	{
 		CameraController.Instance.ChangeCameraPos(Mode.BatMode);
-		BattingManager.Instance.BattingReset();
 	}
 
 	public void PitchMode()
 	{
 		CameraController.Instance.ChangeCameraPos(Mode.PitchMode);
+	}
+
+	public void WaitReset()
+	{
+		Invoke("ResetMode", 3f);
+	}
+
+	private void ResetMode()
+	{
+		ChangeState(BattingState.Idle);
 	}
 
 	public void ResetGame(BattingState state)
@@ -220,5 +230,11 @@ public class GameManager : MonoSingleton<GameManager>
 		{
 			_ballObject = null;
 		}
+	}
+
+	public void HomeRun()
+	{
+		_isHomeRun = true;
+		onHomeRun?.Invoke();
 	}
 }

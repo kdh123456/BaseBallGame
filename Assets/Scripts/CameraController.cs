@@ -18,6 +18,7 @@ public class CameraController : MonoSingleton<CameraController>
 
 	private void Start()
 	{
+		GameManager.Instance.onChangeGameMode += CameraReset;
 		GameManager.Instance.onChangeGameMode += ChangeCameraPos;
 		_virtualCamera = GetComponent<CinemachineVirtualCamera>();
 	}
@@ -55,4 +56,25 @@ public class CameraController : MonoSingleton<CameraController>
 		ChaseCamera(null);
 		ZoomInOutCamera(60);
 	}
+
+	public void CameraReset(Mode mode)
+	{
+		ChaseCamera(null);
+		ZoomInOutCamera(60);
+	}
+
+
+	public void HomeRunCameraSet(GameObject obj)
+	{
+		ChaseCamera(obj);
+		ZoomInOutCamera(30);
+		Invoke("HomeRuning", 3f);
+	}
+
+	private void HomeRuning()
+	{
+		ZoomInOutCamera(60);
+		SetCameraPosition(_pitchingCameraPos + Vector3.up * 20);
+	}
+
 }

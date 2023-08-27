@@ -45,13 +45,23 @@ public class Batter : MonoBehaviour
 		_virtualBat.vBodys = bat.bodys;
 	}
 
+	public void Bat()
+	{
+		this.transform.position = vec;
+		this.transform.rotation = rotation;
+		_animator.SetBool("Batting", true);
+		GameManager.Instance.ChangeState(BattingState.Bat);
+	}
+
 	private void Run(BattingState state)
 	{ 
 		if(state == BattingState.Batting)
 		{
 			GameObject obj = Instantiate(GameManager.Instance.RunnerObject);
 			obj.transform.position = this.transform.position;
-			obj.GetComponent<Runner>().RunBase();
+			Runner runner = obj.GetComponent<Runner>();
+			runner.RunBase();
+			RunnerManager.Instance.AddRunner(runner);
 			this.gameObject.SetActive(false);
 		}
 	}

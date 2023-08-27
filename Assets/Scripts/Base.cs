@@ -8,34 +8,58 @@ public class Base : MonoBehaviour
 {
 	[SerializeField]
 	private int index;
-
-	public bool _isHomeBase = false;
-
 	public int Index => index;
+
+	public GameObject enemybasePos;
+	public GameObject playerbasePos;
 
 	private bool _haveRunner = false;
 	public bool HaveRunner => _haveRunner;
+	public Runner runner => _inSideRunner;
+	private Runner _inSideRunner;
+
+	private Runner _comeRunner = null;
 	public bool Running => _comeRunner != null;
+
+	private Defend _defender;
+	public bool HaveDefender => _defender != null;
+
+	public bool haveDefend;
+
 
 	private bool _baseCover = false;
 	public bool IsBaseCover => _baseCover;
-
-	private bool _isHomeRun = false;
-
-	public Runner runner => _inSideRunner;
-
-	private Runner _inSideRunner;
-
-	private Runner _comeRunner;
-
-	private Defender _defender;
 	private Defend _comeDefender;
 
-	private float coverDefenderDistance = 999f;
+	private bool _isHomeRun = false;
+	public bool _isHomeBase = false;
 
+	private bool _isOnTouchAndOutBase = false;
+	private bool _touch = false;
+	public bool OnAOutBase => _isOnTouchAndOutBase;
+
+	private void Start()
+	{
+		GameManager.Instance.onStateChange += ResetBase;
+	}
+
+	private void Update()
+	{
+		if (_comeDefender != null)
+			Debug.Log(this.gameObject.name + "      " + _comeDefender.name);
+
+		haveDefend = HaveDefender;
+	}
 	private void OnTriggerEnter(Collider other)
 	{
 		CheckRunnerAndDefender(other);
+	}
+
+	private void OnTriggerStay(Collider other)
+	{
+		if (_defender != null)
+			if (_defender.HaveBall)
+				OnTouch();
 	}
 
 	private void OnTriggerExit(Collider other)
@@ -45,8 +69,11 @@ public class Base : MonoBehaviour
 
 	private void CheckRunnerAndDefender(Collider col, bool isExit = false)
 	{
+		if (col.tag != "BaseBallPlayer")
+			return;
+
 		Runner runner = col.GetComponent<Runner>();
-		Defender defender = col.GetComponent<Defender>();
+		Defend defender = col.GetComponent<Defend>();
 
 		bool isdefender = runner == null ? true : false;
 
@@ -60,17 +87,27 @@ public class Base : MonoBehaviour
 		}
 	}
 
-	private void EnterRunnerAndDefender(bool isDefender, Runner run, Defender defen)
+	private void EnterRunnerAndDefender(bool isDefender, Runner run, Defend defen)
 	{
 		if (isDefender)
 		{
 			_defender = defen;
-			_defender?.BaseIn(this);
+			_baseCover = false;
+			_comeDefender = null;
+
+			BaseCoverState state = _defender.GetComponent<BaseCoverState>();
+			state.BaseIn();
 		}
 		else
 		{
 			if (_defender != null)
 			{
+				if(_touch && _isOnTouchAndOutBase)
+				{
+					RunFailed(run);
+					return;
+				}
+
 				if (_defender.HaveBall == null)
 					RunSuccess(run);
 				else
@@ -83,12 +120,16 @@ public class Base : MonoBehaviour
 		}
 	}
 
-	private void ExitRunnerAndDefender(bool isDefender, Runner run, Defender defen)
+	private void ExitRunnerAndDefender(bool isDefender, Runner run, Defend defen)
 	{
 		if (isDefender)
 		{
-			_defender?.BaseOut();
-			_defender = null;
+			if (_defender != null)
+			{
+				BaseCoverState state = _defender.GetComponent<BaseCoverState>();
+				state?.BaseOut();
+				_defender = null;
+			}
 		}
 		else
 		{
@@ -99,46 +140,29 @@ public class Base : MonoBehaviour
 	public void BaseCovering() =>
 		_baseCover = true;
 
-	public void BaseCoverSetting(float distance, Defend defend)
-	{
-		if(coverDefenderDistance > distance)
-		{
-			_comeDefender.GetComponent<BaseCoverState>().baseCoverOn = false;
-
-			coverDefenderDistance = distance;
-			defend.GetComponent<BaseCoverState>().baseCoverOn = true;
-			_comeDefender = defend;
-		}
-	}
-
 	public void BaseRunRunner(Runner runner)
 		=> _comeRunner = runner;
 
 	public void RunSuccess(Runner runer)
 	{
-			Debug.Log(_isHomeBase);
-			Debug.Log(_isHomeRun);
 		if (_isHomeRun)
 		{
 			if (!_isHomeBase)
 				runer?.HomeRun();
 
-			if(_isHomeBase)
+			if (_isHomeBase)
 			{
-				Debug.LogWarning("Change");
 				int count = BaseControll.Instance.EmptyBases().Count;
-				Debug.LogWarning(count);
 				if (count == 0)
 				{
-					Debug.LogWarning("IdleChange");
-					GameManager.Instance.ChangeState(BattingState.Idle);
+					GameManager.Instance.WaitReset();
 				}
 			}
 		}
 		if (_isHomeBase)
 		{
 			GameManager.Instance.AddScore();
-			runer?.gameObject?.SetActive(false);
+			Destroy(runer.gameObject);
 		}
 		_haveRunner = true;
 		_inSideRunner = runer;
@@ -149,16 +173,17 @@ public class Base : MonoBehaviour
 	{
 		runer.gameObject.SetActive(false);
 		_inSideRunner = null;
+		_comeRunner = null;
 		GameManager.Instance.AddOut();
-		_defender.BaseOut();
 	}
+
+	public void ComeRunFailed() => _comeRunner = null;
 
 	public void ExitBase()
 	{
 		_haveRunner = false;
 		_inSideRunner = null;
 	}
-
 	public float BaseRunnerDistance()
 	{
 		return Vector3.Distance(this.transform.position, _comeRunner.transform.position);
@@ -169,5 +194,28 @@ public class Base : MonoBehaviour
 	public void HomeRunEnd()
 	=> _isHomeRun = false;
 
+	public void OnTouchBase(bool isOnTouch) => _isOnTouchAndOutBase = isOnTouch; 
 
+	public void OnTouch()
+	{
+		if(_isOnTouchAndOutBase)
+		{
+			_touch = true;
+		}
+	}
+
+
+	private void ResetBase(BattingState state)
+	{
+		if (state == BattingState.Batting)
+		{
+			_haveRunner = false;
+			_inSideRunner = null;
+			_comeRunner = null;
+			_defender = null;
+			_baseCover = false;
+			_comeDefender = null;
+			_isHomeRun = false;
+		}
+	}
 }

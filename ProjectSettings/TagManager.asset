@@ -7,6 +7,8 @@ TagManager:
   - Ball
   - Ground
   - Zone
+  - BaseBallPlayer
+  - Bat
   layers:
   - Default
   - TransparentFX

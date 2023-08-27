@@ -47,13 +47,13 @@ public class BatCapsuleFollower : MonoBehaviour
 		{
 
 			Vector3 conVel = _rigidbody.velocity;
-			Vector3 conAnguarval = _rigidbody.angularVelocity;
+			//Vector3 conAnguarval = _rigidbody.angularVelocity;
 
 			Vector3 ballVel = collision.rigidbody.velocity;
-			Vector3 ballAnguarval = collision.rigidbody.angularVelocity;
+			//Vector3 ballAnguarval = collision.rigidbody.angularVelocity;
 
 			collision.rigidbody.velocity = conVel + -ballVel;
-			collision.rigidbody.angularVelocity = conAnguarval + -ballAnguarval;
+			//collision.rigidbody.angularVelocity = conAnguarval + -ballAnguarval;
 
 			collision.gameObject.GetComponent<Ball>().Hit();
 		}

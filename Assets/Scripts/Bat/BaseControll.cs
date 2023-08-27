@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -13,6 +14,8 @@ public class BaseControll : MonoSingleton<BaseControll>
 
 	public Base HomeRunBase => _homeRunBase;
 
+	public event Action _homeRun;
+
 	public void Start()
 	{
 		for (int i = 0; i < 3; i++)
@@ -25,6 +28,8 @@ public class BaseControll : MonoSingleton<BaseControll>
 		}
 
 		GameManager.Instance.onStateChange += HomeRunEnd;
+		GameManager.Instance.onStateChange += TouchOutBase;
+		GameManager.Instance.onHomeRun += HomeRun;
 	}
 
 	public Base BaseReturn(int index = 1)
@@ -36,10 +41,8 @@ public class BaseControll : MonoSingleton<BaseControll>
 	{
 		foreach (Base bases in _bases)
 		{
-			if (bases._isHomeBase)
-				continue;
 
-			if (bases.HaveRunner || bases.IsBaseCover)
+			if (bases.IsBaseCover || bases.HaveDefender)
 				continue;
 
 			return true;
@@ -53,10 +56,8 @@ public class BaseControll : MonoSingleton<BaseControll>
 		List<Base> baseList = new List<Base>();
 		foreach (Base bases in _bases)
 		{
-			if (bases._isHomeBase)
-				continue;
 
-			if (bases.HaveRunner || bases.IsBaseCover)
+			if (bases.IsBaseCover || bases.HaveDefender)
 				continue;
 
 			baseList.Add(bases);
@@ -67,51 +68,38 @@ public class BaseControll : MonoSingleton<BaseControll>
 
 	public bool ThrowBaseHave(Base tsBase = null)
 	{
-		bool isThrowBaseHave = false;
 		foreach (Base curBase in _bases)
 		{
 			if (tsBase == curBase)
-				continue;
-
-			if (!curBase.Running)
-				continue;
-
-			if (curBase.BaseRunnerDistance() > 1)
 			{
-				isThrowBaseHave = true;
-				break;
+				continue;
+			}
+
+			if (curBase.Running && curBase.HaveDefender)
+			{
+				return true;
 			}
 		}
 
-		return isThrowBaseHave;
+		return false;
 	}
 
-	public Base ThrowBaseReturn()
+	public Base ThrowBaseReturn(Base tsBase = null)
 	{
-		Base curBase = null;
 		foreach (Base defBase in _bases)
 		{
-			if (curBase == null)
+			if (tsBase == defBase)
 			{
-				curBase = defBase;
 				continue;
 			}
 
-			if (!curBase.Running && defBase)
+			if(defBase.Running && defBase.HaveDefender)
 			{
-				curBase = defBase;
+				return defBase;
 			}
-
-			if (curBase.Running == false)
-				continue;
-			if (defBase.Running == false)
-				continue;
-
-			if (curBase.BaseRunnerDistance() > defBase.BaseRunnerDistance())
-				curBase = defBase;
 		}
 
-		return curBase;
+		return null;
 	}
 
 	public void HomeRun()
@@ -129,6 +117,20 @@ public class BaseControll : MonoSingleton<BaseControll>
 			for (int i = 0; i < 4; i++)
 			{
 				_bases[i].HomeRunEnd();
+			}
+		}
+	}
+
+	private void TouchOutBase(BattingState state)
+	{
+		if (state == BattingState.Batting)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				if(_bases[i].HaveRunner && i > 0)
+				{
+					_bases[i - 1].OnTouchBase(true);
+				}
 			}
 		}
 	}

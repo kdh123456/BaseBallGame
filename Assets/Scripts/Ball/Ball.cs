@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Ball : MonoBehaviour
 {
@@ -25,11 +26,22 @@ public class Ball : MonoBehaviour
 	private Vector3 rbvec;
 
 	public Vector3 battingVec => rbvec;
-	public bool IsShoot => _isShoot;
+	public bool IsShoot => _isShoot;  
 
+	private Vector3 _gravity;
+	private Vector3 _firstRb;
+	private Vector3 _futurePath;
+	public Vector3 FuturePath => _futurePath;
+
+	private bool _flying = false;
+	public bool Flying => _flying;
+
+	private bool _isMuzzle = false;
+	public bool IsMuzzle => _isMuzzle;
 	void Awake()
 	{
 		_rb = GetComponent<Rigidbody>();
+		_gravity = Physics.gravity;
 	}
 
 	public void Shoot(Vector3 shootVec, Vector3 rotationVec, float speed, float rpmSpeed, bool isPitcher = false)
@@ -47,15 +59,6 @@ public class Ball : MonoBehaviour
 
 		GameManager.Instance.SetBall(this.transform.gameObject);
 		_isShoot = true;
-	}
-
-	private void Update()
-	{
-		rbvec = _rb.velocity;
-		Vector3 vec = rbvec;
-		//vec = vec * 100;
-		vec.y = 1;
-		Debug.DrawLine(this.transform.position, this.transform.position + vec);
 	}
 
 	private void FixedUpdate()
@@ -79,7 +82,8 @@ public class Ball : MonoBehaviour
 		_isShoot = false;
 		_rb.useGravity = false;
 		_rb.velocity = Vector3.zero;
-		this.transform.SetParent(trans);
+		_isMuzzle = true;
+		this.transform.SetParent(trans);  
 		this.transform.localPosition = Vector3.zero;
 	}
 
@@ -88,15 +92,37 @@ public class Ball : MonoBehaviour
 		_isShoot = false;
 
 		cvec = this.transform.position;
-		rbvec = _rb.velocity;
-		rbvec.Normalize();
+
+		_firstRb = _rb.velocity;
+
+		_flying = true;
+
+		FuturePathSet();
 	}
 
+	private void FuturePathSet()
+	{
+		float time = Time.deltaTime;
+		Vector3 velocity = _firstRb + _gravity * time;
+		Vector3 position = this.transform.position;
+		position = position + velocity * time;
+		while (position.y > 0)
+		{
+			velocity = velocity + _gravity * time;
+			position = position + velocity * time;
+		}
+
+		_futurePath = position;
+		DefendController.Instance.FuturePathCover();
+	}
 	private void OnCollisionEnter(Collision collision)
 	{
-		_isShoot = false;
+		if (collision.gameObject.tag == "Bat")
+		{
+			_isShoot = false;
+		}
 
-		if(collision.gameObject.tag == "Ground" && GameManager.Instance.State == BattingState.Bat)
+		if (collision.gameObject.tag == "Ground" && GameManager.Instance.State == BattingState.Bat)
 		{
 			if (GameManager.Instance.CurrentStat.strikeCount < 2)
 			{
@@ -105,5 +131,42 @@ public class Ball : MonoBehaviour
 			else
 				return;
 		}
+
+		if(collision.gameObject.tag == "Ground" && GameManager.Instance.State == BattingState.Batting)
+		{
+			_flying = false;
+		}
+	}
+
+	public void DefendThrow(Vector3 vec)
+	{
+		_isMuzzle = false;
+		_rb.useGravity = true;
+		_rb.velocity = GetVelocity(this.transform.position, vec, 30f);
+	}
+
+	public Vector3 GetVelocity(Vector3 player, Vector3 target, float initialAngle)
+	{
+		float gravity = Physics.gravity.magnitude;
+		float angle = initialAngle * Mathf.Deg2Rad;
+
+		Vector3 planarTarget = new Vector3(target.x, 0, target.z);
+		Vector3 planarPosition = new Vector3(player.x, 0, player.z);
+
+		float distance = Vector3.Distance(planarTarget, planarPosition);
+		float yOffset = player.y - target.y;
+
+		float initialVelocity
+			= (1 / Mathf.Cos(angle)) * Mathf.Sqrt((0.5f * gravity * Mathf.Pow(distance, 2)) / (distance * Mathf.Tan(angle) + yOffset));
+
+		Vector3 velocity
+			= new Vector3(0f, initialVelocity * Mathf.Sin(angle), initialVelocity * Mathf.Cos(angle));
+
+		float angleBetweenObjects
+			= Vector3.Angle(Vector3.forward, planarTarget - planarPosition) * (target.x > player.x ? 1 : -1);
+		Vector3 finalVelocity
+			= Quaternion.AngleAxis(angleBetweenObjects, Vector3.up) * velocity;
+
+		return finalVelocity;
 	}
 }

@@ -37,6 +37,25 @@ public class Bat : MonoBehaviour
 				rb.gameObject.SetActive(true);
 			}
 		}
+
+		if (isVirtual)
+		{
+			foreach (Rigidbody rb in bodys)
+			{
+				rb.gameObject.SetActive(true);
+			}
+		}
+	}
+	public void OnDisable()
+	{
+		if (isVirtual)
+		{
+			foreach (Rigidbody rb in bodys)
+			{
+				if(rb!= null)
+				rb.gameObject.SetActive(false);
+			}
+		}
 	}
 
 	private void Update()

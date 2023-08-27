@@ -15,25 +15,40 @@ public class Runner : MonoBehaviour
 	private NavMeshAgent _navMeshAgent;
 
 	private Vector3 runObjectVec;
+	public Vector3 RunObjectVec => runObjectVec;
 
 	bool isRun = false;
+	public bool IsRun => isRun;
 
+	private bool _isOut = false;
+	public bool IsOut => _isOut;
+
+	Base _base;
+
+	private Vector3 _startPosition = Vector3.zero;
+	public Vector3 StartPos => _startPosition;
 	private void Awake()
 	{
 		animator = GetComponent<Animator>();
 		_navMeshAgent = GetComponent<NavMeshAgent>();
-		GameManager.Instance.onStateChange += (state) =>
-		{
-			if (state == BattingState.Batting)
-			{
-				RunBase();
-			}
-		};
+		GameManager.Instance.onStateChange += Run;
+
+		GameManager.Instance.onChangeGameMode += DestroyRunner;
 	}
 
 	private void Start()
 	{
+		_navMeshAgent = GetComponent<NavMeshAgent>();
+		Debug.Log(_navMeshAgent);
+	}
 
+	private void OnDestroy()
+	{
+		if(GameManager.Instance != null)
+		{
+			GameManager.Instance.onStateChange -= Run;
+			GameManager.Instance.onChangeGameMode -= DestroyRunner;
+		}
 	}
 
 	private void Update()
@@ -45,6 +60,14 @@ public class Runner : MonoBehaviour
 		animator.SetBool("Run", isRun);
 	}
 
+	private void Run(BattingState state)
+	{
+		if (state == BattingState.Batting)
+		{
+			RunBase();
+		}
+	}
+
 	public void RunBase()
 	{
 		if (runIndex != 0)
@@ -52,15 +75,32 @@ public class Runner : MonoBehaviour
 			Base currentbase = BaseControll.Instance.BaseReturn(runIndex);
 			currentbase.ExitBase();
 		}
-		Base nextbase = BaseControll.Instance.BaseReturn(runIndex++);
-		nextbase.BaseRunRunner(this);
-		runObjectVec = nextbase.transform.position;
+		_startPosition = this.transform.position;
+		_base = BaseControll.Instance.BaseReturn(runIndex++);
+		_base.BaseRunRunner(this);
+		runObjectVec = _base.enemybasePos.transform.position;
 		isRun = true;
 		_navMeshAgent.SetDestination(runObjectVec);
 	}
 
 	public void HomeRun()
 	{
+		RunnerManager.Instance.onBaseOn?.Invoke(this);
 		RunBase();
+	}
+
+	public void Out()
+	{
+		RunnerManager.Instance.RemoveRunner(this);
+		_isOut = true;
+		_base.ComeRunFailed();
+		Destroy(this.gameObject);
+		Debug.Log("Destroy");
+	}
+
+	private void DestroyRunner(Mode mode)
+	{
+		RunnerManager.Instance.RemoveRunner(this);
+		Destroy(this.gameObject);
 	}
 }
