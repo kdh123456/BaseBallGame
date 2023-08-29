@@ -15,8 +15,10 @@ public enum BattingState
 
 public enum Mode
 {
-	PitchMode,
-	BatMode
+	PitchMode = 0,
+	BatMode,
+	EndMode,
+	StartMode,
 }
 
 public enum Count
@@ -61,6 +63,7 @@ public class GameManager : MonoSingleton<GameManager>
 	public event Action<Mode> onChangeGameMode;
 	public event Action<BattingState> onStateChange;
 	public event Action<TeamEnum, int> onAddScore;
+	public event Action<TeamEnum, int> onChangeTeam;
 	public event Action onHomeRun;
 
 	private bool isChange = false;
@@ -76,10 +79,13 @@ public class GameManager : MonoSingleton<GameManager>
 
 	public GameObject BallObject => _ballObject;
 
+	private int episode = 8;
+	private int Episode => episode;
+
 	private void Start()
 	{
 		StartTeam();
-		ChangeMode(Mode.PitchMode);
+		ChangeMode(Mode.StartMode);
 
 		onChangeCount += ChangeTeam;
 		onStateChange += IdleAction;
@@ -125,12 +131,18 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		if (count == CountEnum.Out && currentTeam.outCount == 3)
 		{
-			onChangeCount?.Invoke(CountEnum.OutReset);
 			currentTeam.outCount = 0;
 			currentTeam.strikeCount = 0;
 			currentTeam.ballCount = 0;
 			currentTeam = currentTeam == firstTeam ? secoundTeam : firstTeam;
+			onChangeCount?.Invoke(CountEnum.OutReset);
+			if(episode == 9)
+			{
+				ChangeMode(Mode.EndMode);
+				return;
+			}
 			ChangeMode(gameMode == Mode.PitchMode ? Mode.BatMode : Mode.PitchMode);
+			episode++;
 		}
 	}
 
@@ -201,6 +213,20 @@ public class GameManager : MonoSingleton<GameManager>
 
 			_isHomeRun = false;
 			CameraController.Instance.CameraReset();
+		}
+	}
+
+	public void ChangeTeam(TeamEnum teamEnum, bool isTeam = false)
+	{
+		if(!isTeam)
+		{
+			firstTeam.teamName = teamEnum;
+			onChangeTeam?.Invoke(firstTeam.teamName, 1);
+		}
+		else
+		{
+			secoundTeam.teamName = teamEnum;
+			onChangeTeam?.Invoke(secoundTeam.teamName, 0);
 		}
 	}
 

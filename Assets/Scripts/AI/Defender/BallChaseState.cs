@@ -17,7 +17,7 @@ public class BallChaseState : DefendState
 
 	private void BallSetting(BattingState state)
 	{
-		if(state == BattingState.Batting)			
+		if (state == BattingState.Batting)
 		{
 			_coverBall = GameManager.Instance.BallObject.GetComponent<Ball>();
 		}
@@ -34,7 +34,7 @@ public class BallChaseState : DefendState
 			if (_agent.remainingDistance < 1)
 				_animator.SetBool("Chase", false);
 
-			if(_defend.HaveBall)
+			if (_defend.HaveBall)
 			{
 				_animator.SetBool("Chase", false);
 				_agent.isStopped = true;
@@ -48,14 +48,16 @@ public class BallChaseState : DefendState
 	public override bool IsStateOn()
 	{
 		if (ballCoverOn && !_defend.HaveBall)
-			return true;
+		{
+				return true;
+		}
 		else
 			return false;
 	}
 
 	private void ResetBallChaseState(BattingState state)
 	{
-		if(state == BattingState.Idle)
+		if (state == BattingState.Idle)
 		{
 			_agent.isStopped = true;
 			_animator.SetBool("Chase", false);

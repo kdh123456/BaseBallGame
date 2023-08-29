@@ -14,7 +14,8 @@ public enum TeamEnum
 	NCDinos,
 	KTWiz,
 	LotteGiants,
-	KiwoomHeros
+	KiwoomHeros,
+	End
 }
 
 public class ScorePanel : MonoBehaviour
@@ -31,6 +32,8 @@ public class ScorePanel : MonoBehaviour
 		{
 			TeamChange(_teamScore[i].ThisTeam, i);
 		}
+		  
+		GameManager.Instance.onChangeTeam += TeamChange;
 	}
 
 	public void TeamChange(TeamEnum teamSelect, int teamIndex)

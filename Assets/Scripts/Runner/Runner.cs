@@ -32,7 +32,6 @@ public class Runner : MonoBehaviour
 		animator = GetComponent<Animator>();
 		_navMeshAgent = GetComponent<NavMeshAgent>();
 		GameManager.Instance.onStateChange += Run;
-
 		GameManager.Instance.onChangeGameMode += DestroyRunner;
 	}
 
@@ -95,10 +94,15 @@ public class Runner : MonoBehaviour
 		_isOut = true;
 		_base.ComeRunFailed();
 		Destroy(this.gameObject);
-		Debug.Log("Destroy");
 	}
 
 	private void DestroyRunner(Mode mode)
+	{
+		RunnerManager.Instance.RemoveRunner(this);
+		Destroy(this.gameObject);
+	}
+
+	public void DestroyRunner()
 	{
 		RunnerManager.Instance.RemoveRunner(this);
 		Destroy(this.gameObject);

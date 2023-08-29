@@ -38,6 +38,9 @@ public class Ball : MonoBehaviour
 
 	private bool _isMuzzle = false;
 	public bool IsMuzzle => _isMuzzle;
+
+	private bool _isThrowing = false;
+	public bool IsThrowing => _isThrowing;
 	void Awake()
 	{
 		_rb = GetComponent<Rigidbody>();
@@ -79,6 +82,7 @@ public class Ball : MonoBehaviour
 
 	public void Muzzle(Transform trans)
 	{
+		_isThrowing = false;
 		_isShoot = false;
 		_rb.useGravity = false;
 		_rb.velocity = Vector3.zero;
@@ -96,6 +100,8 @@ public class Ball : MonoBehaviour
 		_firstRb = _rb.velocity;
 
 		_flying = true;
+
+		DefendController.Instance.onBating?.Invoke();
 
 		FuturePathSet();
 	}
@@ -122,17 +128,7 @@ public class Ball : MonoBehaviour
 			_isShoot = false;
 		}
 
-		if (collision.gameObject.tag == "Ground" && GameManager.Instance.State == BattingState.Bat)
-		{
-			if (GameManager.Instance.CurrentStat.strikeCount < 2)
-			{
-				GameManager.Instance.AddStrike();
-			}
-			else
-				return;
-		}
-
-		if(collision.gameObject.tag == "Ground" && GameManager.Instance.State == BattingState.Batting)
+		if(collision.gameObject.tag == "Ground")
 		{
 			_flying = false;
 		}
@@ -140,6 +136,7 @@ public class Ball : MonoBehaviour
 
 	public void DefendThrow(Vector3 vec)
 	{
+		_isThrowing = true;
 		_isMuzzle = false;
 		_rb.useGravity = true;
 		_rb.velocity = GetVelocity(this.transform.position, vec, 30f);

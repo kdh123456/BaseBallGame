@@ -10,7 +10,7 @@ public class Mitt : MonoBehaviour
 
 	private void OnTriggerEnter(Collider other)
 	{
-		if (GameManager.Instance.State == BattingState.Pitching)
+		if (GameManager.Instance.State == BattingState.Pitching || GameManager.Instance.State == BattingState.Bat)
 		{
 			_catcher.Check(other);
 			GameManager.Instance.WaitReset();

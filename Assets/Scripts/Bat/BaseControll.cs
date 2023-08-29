@@ -66,6 +66,17 @@ public class BaseControll : MonoSingleton<BaseControll>
 		return baseList;
 	}
 
+	public bool BaseComeRunnerHave()
+	{
+		foreach (Base bases in _bases)
+		{
+			if (bases.Running || bases.HaveDefender)
+				return true;
+		}
+
+		return false;
+	}
+
 	public bool ThrowBaseHave(Base tsBase = null)
 	{
 		foreach (Base curBase in _bases)

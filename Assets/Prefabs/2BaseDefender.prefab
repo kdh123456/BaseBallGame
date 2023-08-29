@@ -2376,6 +2376,7 @@ GameObject:
   - component: {fileID: 5866666020458054496}
   - component: {fileID: 392663304}
   - component: {fileID: 2342708925013318385}
+  - component: {fileID: 1979066350}
   m_Layer: 0
   m_Name: 2BaseDefender
   m_TagString: BaseBallPlayer
@@ -2598,7 +2599,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
-  - {fileID: 8235478285463755018}
+  - {fileID: 1979066350}
   - {fileID: 5866666020458054497}
   _currentState: {fileID: 0}
 --- !u!114 &2342708925013318385
@@ -2611,5 +2612,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b273dc93b69641f4caa50bcf082a8433, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1979066350
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9118419322196173900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56def8eb131ad204f8fe31e7502a3f71, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 

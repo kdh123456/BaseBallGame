@@ -7,7 +7,7 @@ public class HomeRunZone : MonoBehaviour
 	public void OnCollisionEnter(Collision collision)
 	{
 		if (collision.transform.tag == "Ball"
-			&& GameManager.Instance.State == BattingState.Batting)
+			&& GameManager.Instance.State == BattingState.Batting && collision.gameObject.GetComponent<Ball>().Flying)
 		{
 			CameraController.Instance.HomeRunCameraSet(RunnerManager.Instance.BattingRunner().gameObject);
 			GameManager.Instance.HomeRun();

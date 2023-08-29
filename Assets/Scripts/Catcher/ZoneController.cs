@@ -14,8 +14,11 @@ public class ZoneController : MonoBehaviour
 
 	private void ZoneChange(Mode mode)
 	{
-		int index = mode == Mode.PitchMode ? 1 : 0;
-		zones[index].SetActive(false);
-		zones[(int)mode].SetActive(true);
+		if (mode == Mode.PitchMode || mode == Mode.BatMode)
+		{
+			int index = mode == Mode.PitchMode ? 1 : 0;
+			zones[index].SetActive(false);
+			zones[(int)mode].SetActive(true);
+		}
 	}
 }

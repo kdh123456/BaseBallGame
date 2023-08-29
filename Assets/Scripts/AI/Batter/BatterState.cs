@@ -38,7 +38,6 @@ public class BatterState : State
 
 	public override void StateOn()
 	{
-		Debug.Log("Bat");
 
 		Vector3 vec = _pitchObj.transform.position;
 

@@ -16,6 +16,10 @@ public class Batter : MonoBehaviour
 	[SerializeField]
 	private GameObject _batPos;
 
+	[SerializeField]
+	private GameObject _ballPos;
+	private bool _autoMode = false; 
+
 	Vector3 vec;
 	Quaternion rotation;
 
@@ -41,7 +45,23 @@ public class Batter : MonoBehaviour
 	private void Batting()
 	{
 		_virtualBat.gameObject.SetActive(true);
-		_virtualBat.transform.position = _batPos.transform.position + Vector3.right;
+		Vector3 pos = Vector3.zero;
+		if(_autoMode)
+		{
+			Vector3 vec = _ballPos.transform.position;
+
+			Debug.Log(vec);
+
+			float x = Random.Range(vec.x - 0.1f, vec.x + 0.1f);
+			float y = Random.Range(vec.y - 0.1f, vec.y + 0.1f);
+
+			pos = new Vector3(x, y, vec.z) + Vector3.right;
+		}
+		else
+		{
+			pos = _batPos.transform.position + Vector3.right;
+		}
+		_virtualBat.transform.position = pos;
 		_virtualBat.vBodys = bat.bodys;
 	}
 
@@ -52,6 +72,9 @@ public class Batter : MonoBehaviour
 		_animator.SetBool("Batting", true);
 		GameManager.Instance.ChangeState(BattingState.Bat);
 	}
+
+	public void BatAutoModeOn() => _autoMode = true;
+	public void BatAutoModeOff() => _autoMode = false;
 
 	private void Run(BattingState state)
 	{ 

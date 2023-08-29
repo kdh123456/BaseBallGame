@@ -14,24 +14,29 @@ public class Catcher : MonoBehaviour
 	private Animator _animator;
 
 	private bool isCatch = false;
+	private bool noHit = false;
 
 	private void Start()
 	{
 		_animator = GetComponent<Animator>();
 
 		GameManager.Instance.onStateChange += CatchStart;
+		DefendController.Instance.onBating += Hit;
+		DefendController.Instance.onBating += CatchEnd;
 	}
 
 	public void Check(Collider other)
 	{
-		if (other.CompareTag("Ball") && GameManager.Instance.State != BattingState.Batting)
+		if (other.CompareTag("Ball"))
 		{
-			if (!other.GetComponent<Ball>().IsShoot)
+
+			if (GameManager.Instance.State == BattingState.Bat)
+			{
+				Strike();
 				return;
+			}
 
 			if (zone.isSktrike)
-				Strike();
-			else if (!zone.isSktrike && GameManager.Instance.State == BattingState.Bat)
 				Strike();
 			else if (!zone.isSktrike)
 				Ball();
@@ -43,6 +48,7 @@ public class Catcher : MonoBehaviour
 		GameManager.Instance.AddStrike();
 		zone.isSktrike = false;
 		CatchEnd();
+		noHit = false;
 	}
 
 	private void Ball()
@@ -58,6 +64,8 @@ public class Catcher : MonoBehaviour
 	}
 
 	private void CatchEnd() => isCatch = false;
+
+	private void Hit() => noHit = true;
 
 	private void OnAnimatorIK(int layerIndex)
 	{

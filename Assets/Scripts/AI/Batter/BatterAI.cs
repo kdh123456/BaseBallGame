@@ -13,7 +13,6 @@ public class BatterAI : MonoBehaviour
 		_isBatting = _batState.IsStateOn();
 		if(_isBatting && GameManager.Instance.gameMode == Mode.PitchMode)
 		{
-			Debug.Log("sdaf");
 			_batState.StateOn();
 		}
 	}

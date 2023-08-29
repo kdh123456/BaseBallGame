@@ -2121,6 +2121,7 @@ GameObject:
   - component: {fileID: 7310728550041198609}
   - component: {fileID: 7310728550041198610}
   - component: {fileID: 4143553891269835937}
+  - component: {fileID: 5866666020083057341}
   m_Layer: 0
   m_Name: Pitcher
   m_TagString: BaseBallPlayer
@@ -2291,7 +2292,6 @@ MonoBehaviour:
   _states:
   - {fileID: 7310728550041198606}
   - {fileID: 7310728550041198613}
-  - {fileID: 7310728550041198615}
   - {fileID: 7310728550041198610}
   _currentState: {fileID: 0}
 --- !u!114 &7310728550041198606
@@ -2336,7 +2336,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _states:
-  - {fileID: 7310728550041198615}
   - {fileID: 7310728550041198609}
   _currentState: {fileID: 0}
 --- !u!114 &7310728550041198615
@@ -2390,6 +2389,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxTimer: 5
+--- !u!114 &5866666020083057341
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7617140786081963317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 56def8eb131ad204f8fe31e7502a3f71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7670171663529410158
 GameObject:
   m_ObjectHideFlags: 0

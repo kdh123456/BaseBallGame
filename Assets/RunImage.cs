@@ -26,7 +26,10 @@ public class RunImage : MonoBehaviour
 			if (percentage >= 0.9)
 			{
 				if (_runIndex == 3)
-					Destroy(this.gameObject);
+				{
+					RunnerManager.Instance.RemoveRunner(_runnerObject);
+					return;
+				}
 
 				_isRun = false;
 			}

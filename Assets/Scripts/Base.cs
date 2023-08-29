@@ -152,8 +152,7 @@ public class Base : MonoBehaviour
 
 			if (_isHomeBase)
 			{
-				int count = BaseControll.Instance.EmptyBases().Count;
-				if (count == 0)
+				if (BaseControll.Instance.BaseComeRunnerHave())
 				{
 					GameManager.Instance.WaitReset();
 				}
@@ -162,7 +161,7 @@ public class Base : MonoBehaviour
 		if (_isHomeBase)
 		{
 			GameManager.Instance.AddScore();
-			Destroy(runer.gameObject);
+			runer.DestroyRunner();
 		}
 		_haveRunner = true;
 		_inSideRunner = runer;
@@ -171,7 +170,7 @@ public class Base : MonoBehaviour
 
 	private void RunFailed(Runner runer)
 	{
-		runer.gameObject.SetActive(false);
+		runer.Out();
 		_inSideRunner = null;
 		_comeRunner = null;
 		GameManager.Instance.AddOut();

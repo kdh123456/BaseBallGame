@@ -25,8 +25,7 @@ public class TeamScore : MonoBehaviour
 	private void Start()
 	{
 		GameManager.Instance.onAddScore += AddScore;
-
-		
+		GameManager.Instance.onChangeGameMode += ResetScore;
 	}
 
 	private void AddScore(TeamEnum teamName, int count)
@@ -34,6 +33,15 @@ public class TeamScore : MonoBehaviour
 		if(teamName == _thisTeam)
 		{
 			score += count;
+			_text.text = score.ToString();
+		}
+	}
+
+	private void ResetScore(Mode mode)
+	{
+		if(Mode.StartMode == mode)
+		{
+			score = 0;
 			_text.text = score.ToString();
 		}
 	}

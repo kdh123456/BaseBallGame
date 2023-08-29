@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -24,6 +25,7 @@ public class DefendController : MonoSingleton<DefendController>
 	[SerializeField]
 	private GameObject[] objs;
 
+	public Action onBating;
 	private void Start()
 	{
 		GameManager.Instance.onStateChange += BallChaseOn;
@@ -34,10 +36,13 @@ public class DefendController : MonoSingleton<DefendController>
 	{
 		if (_defendOn)
 		{	
-			BallCover();
-			BaseCover();
-			if (RunnerManager.Instance.AllRunnerRuningEnd() && !GameManager.Instance.IsHomeRun)
-				GameManager.Instance.WaitReset();
+			if(!GameManager.Instance.IsHomeRun)
+			{
+				BallCover();
+				BaseCover();
+				if (RunnerManager.Instance.AllRunnerRuningEnd())
+					GameManager.Instance.WaitReset();
+			}
 		}
 	}
 	public void BallCover()
@@ -48,10 +53,9 @@ public class DefendController : MonoSingleton<DefendController>
 		if (GameManager.Instance.BallObject == null)
 			return;
 
-		if (GameManager.Instance.BallObject.GetComponent<Ball>().IsMuzzle)
+		if (GameManager.Instance.BallObject.GetComponent<Ball>().IsMuzzle || GameManager.Instance.BallObject.GetComponent<Ball>().IsThrowing)
 		{
-
-			if (_comeBallDefender != null)
+				if (_comeBallDefender != null)
 				_comeBallDefender.GetComponent<BallChaseState>().ballCoverOn = false;
 			return;
 		}

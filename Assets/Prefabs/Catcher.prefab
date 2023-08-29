@@ -310,7 +310,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _states:
   - {fileID: 9093123526185986985}
-  - {fileID: 6321473112959043184}
   _currentState: {fileID: 0}
 --- !u!114 &8954145093240512864
 MonoBehaviour:
