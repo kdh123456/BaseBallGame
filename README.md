@@ -1,24 +1,12 @@
 # BaseBallGame
 
-우물 밖을 향해 뛰어 올라가세요!
+야구에 다양한 기능
 
-다양한 <b>아이템</b>을 먹어 <b>능력</b>을 사용하세요!
+피칭, 베팅, 수비를 보면서
 
-수많은 능력을 사용하여 당신의 앞을 가로막는 <b>장애물</b>을 뛰어넘으세요!
+야구의 <b>재미</b>를 느끼세요!!
 
-당신은 어디까지 올라갈 수 있을까요?
-
-<b>조작 방법</b> :
-  - 좌우이동 : AD
-  - 점프 : SPACE
-  - 아이템 먹기 : F
-  - 능력 사용하기 : E
-  - 일시 정지 : ESC
-  
   Made by 김대현
-  
-  <b>유튜브</b>
-   - https://youtu.be/GNlec7o6iUE
    
    <b>다운로드</b>
    - https://drive.google.com/file/d/1gD04665yJ-vdwSET_NpxABxHfe3XUkoa/view?usp=sharing
