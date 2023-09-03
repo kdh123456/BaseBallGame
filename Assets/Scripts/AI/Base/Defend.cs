@@ -10,16 +10,16 @@ public class Defend : MonoBehaviour
 	//그 후에 Sequence를 사용해서 state를 계속 실행 시켜준다ㅏ.
 
 	[SerializeField]
-	private State _state;
+	protected State _state;
 
-	private bool _isDefend = false;
+	protected bool _isDefend = false;
 
-	private Ball _haveBall = null;
+	protected Ball _haveBall = null;
 	public Ball HaveBall => _haveBall;
 
-	private Vector3 _firstPosition = Vector3.zero;
-	private Quaternion _quaternion = Quaternion.identity;
-	private NavMeshAgent _agent = null;
+	protected Vector3 _firstPosition = Vector3.zero;
+	protected Quaternion _quaternion = Quaternion.identity;
+	protected NavMeshAgent _agent = null;
 
 	private void Awake()
 	{
@@ -55,13 +55,13 @@ public class Defend : MonoBehaviour
 	{
 		_haveBall = ball;
 	}
-	private void ResetPosition(BattingState state)
+	protected virtual void ResetPosition(BattingState state)
 	{
 		if(state == BattingState.Idle)
 		{
 			_agent.isStopped = true;
-			_agent.enabled = false;
 			Destroy(_haveBall);
+			_agent.enabled = false;
 			this.transform.position = _firstPosition;
 			this.transform.rotation = _quaternion;
 			_agent.enabled = true;

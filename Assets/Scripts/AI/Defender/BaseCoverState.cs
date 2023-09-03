@@ -14,7 +14,7 @@ public class BaseCoverState : DefendState
 	{
 		get
 		{
-			if(_baseCover)
+			if (_baseCover)
 				return _coverBase;
 			return null;
 		}
@@ -30,12 +30,12 @@ public class BaseCoverState : DefendState
 	{
 		if (baseCoverOn)
 		{
-			_agent.isStopped = false ;
+			_agent.isStopped = false;
 			_coverBase.BaseCovering();
 			_agent.SetDestination(_coverBase.playerbasePos.transform.position);
 			_animator.SetBool("Chase", true);
 
-			if(_agent.remainingDistance < 1)
+			if (_agent.remainingDistance < 1)
 				_animator.SetBool("Chase", false);
 		}
 	}
@@ -58,9 +58,10 @@ public class BaseCoverState : DefendState
 
 	private void ResetBaseCoverState(BattingState state)
 	{
-		if(state == BattingState.Idle)
+		if (state == BattingState.Idle)
 		{
-			_agent.isStopped = true;
+			if (_agent.isActiveAndEnabled)
+				_agent.isStopped = true;
 			baseCoverOn = false;
 			_coverBase = null;
 			_baseCover = false;

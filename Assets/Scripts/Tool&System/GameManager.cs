@@ -66,7 +66,6 @@ public class GameManager : MonoSingleton<GameManager>
 	public event Action<TeamEnum, int> onChangeTeam;
 	public event Action onHomeRun;
 
-	private bool isChange = false;
 	private bool _isHomeRun = false;
 	public bool IsHomeRun => _isHomeRun;
 
@@ -92,19 +91,6 @@ public class GameManager : MonoSingleton<GameManager>
 		onStateChange += DelBall;
 	}
 
-	private void Update()
-	{
-		if (Input.GetKeyDown(KeyCode.C))
-		{
-			if (!isChange)
-				ChangeMode(Mode.BatMode);
-			else
-				ChangeMode(Mode.PitchMode);
-
-			isChange = !isChange;
-		}
-	}
-
 	public void StartTeam()
 	{
 		firstTeam.strikeCount = 0;
@@ -119,6 +105,7 @@ public class GameManager : MonoSingleton<GameManager>
 	{
 		gameMode = mode;
 		onChangeGameMode?.Invoke(gameMode);
+		ChangeState(BattingState.Idle);
 	}
 
 	public void ChangeState(BattingState state)
@@ -187,6 +174,7 @@ public class GameManager : MonoSingleton<GameManager>
 
 	public void AddScore()
 	{
+		Debug.Log("AddScore");
 		currentTeam.teamScore++;
 		onAddScore?.Invoke(currentTeam.teamName, 1);
 	}
@@ -240,13 +228,19 @@ public class GameManager : MonoSingleton<GameManager>
 		CameraController.Instance.ChangeCameraPos(Mode.PitchMode);
 	}
 
+	public bool reset = false;
 	public void WaitReset()
 	{
+		if(!reset) 
+		{
+			reset = true;
 		Invoke("ResetMode", 3f);
+		}
 	}
 
 	private void ResetMode()
 	{
+		reset = false;
 		ChangeState(BattingState.Idle);
 	}
 

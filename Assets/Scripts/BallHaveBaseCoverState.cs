@@ -13,8 +13,9 @@ public class BallHaveBaseCoverState : DefendState
 	}
 	public override bool IsStateOn()
 	{
-		if (_state.baseCoverOn && _defend.HaveBall && _state.CoverBase.Running)
-			return true;
+		if (_state.CoverBase != null)
+			if (_state.baseCoverOn && _defend.HaveBall && _state.CoverBase.Running)
+				return true;
 
 		return false;
 	}

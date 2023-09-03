@@ -50,8 +50,6 @@ public class Batter : MonoBehaviour
 		{
 			Vector3 vec = _ballPos.transform.position;
 
-			Debug.Log(vec);
-
 			float x = Random.Range(vec.x - 0.1f, vec.x + 0.1f);
 			float y = Random.Range(vec.y - 0.1f, vec.y + 0.1f);
 

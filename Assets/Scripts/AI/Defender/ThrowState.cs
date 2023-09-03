@@ -49,7 +49,7 @@ public class ThrowState : DefendState
 		if (BaseControll.Instance.ThrowBaseHave(_coverState.CoverBase) && _defend.HaveBall != null)
 		{
 			_animator.SetBool("Throw", true);
-			Vector3 vec = BaseControll.Instance.ThrowBaseReturn(_coverState.CoverBase).transform.position - trans.position;			
+			Vector3 vec = BaseControll.Instance.ThrowBaseReturn(this.transform.position,_coverState.CoverBase).transform.position - trans.position;			
 			this.transform.LookAt(vec);
 			return;
 		}
@@ -62,12 +62,14 @@ public class ThrowState : DefendState
 
 	public void Throw()
 	{
+		if (!BaseControll.Instance.ThrowBaseHave(_coverState.CoverBase) || _defend.HaveBall == null)
+			return;
 		_agent.enabled = false;
-		Vector3 vec = BaseControll.Instance.ThrowBaseReturn(_coverState.CoverBase).transform.position - trans.position;
+		Vector3 vec = BaseControll.Instance.ThrowBaseReturn(this.transform.position,_coverState.CoverBase).transform.position - trans.position;
 		this.transform.LookAt(vec);
 		_defend.HaveBall.transform.parent = null;
 		_defend.HaveBall.transform.position = trans.transform.position + Vector3.right;
-		_defend.HaveBall.DefendThrow(BaseControll.Instance.ThrowBaseReturn(_coverState.CoverBase).transform.position);
+		_defend.HaveBall.DefendThrow(BaseControll.Instance.ThrowBaseReturn(this.transform.position,_coverState.CoverBase).transform.position);
 		_muzzleState._isMuzzle = false;
 		_defend.BallSet(null);
 		_agent.enabled = true;

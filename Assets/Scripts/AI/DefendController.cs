@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.AI;
 
 public enum DefendZoneEnum
 {
@@ -18,6 +19,7 @@ public class DefendController : MonoSingleton<DefendController>
 	public Defend[] _defends;
 	private Ball BallObject => GameManager.Instance.BallObject.GetComponent<Ball>();
 	private Defend _comeBallDefender;
+	private BallChaseState _comeBallDefenderChaseState;
 	private float coverBallDefenderDistance = 999f;
 
 	private bool _defendOn = false;
@@ -26,6 +28,8 @@ public class DefendController : MonoSingleton<DefendController>
 	private GameObject[] objs;
 
 	public Action onBating;
+
+	private Ball _ball; 
 	private void Start()
 	{
 		GameManager.Instance.onStateChange += BallChaseOn;
@@ -50,13 +54,13 @@ public class DefendController : MonoSingleton<DefendController>
 		float minDistance = 999f;
 		Defend coverDefend = null;
 
-		if (GameManager.Instance.BallObject == null)
+		if (_ball == null)
 			return;
 
-		if (GameManager.Instance.BallObject.GetComponent<Ball>().IsMuzzle || GameManager.Instance.BallObject.GetComponent<Ball>().IsThrowing)
+		if (_ball.IsMuzzle || _ball.IsThrowing)
 		{
 				if (_comeBallDefender != null)
-				_comeBallDefender.GetComponent<BallChaseState>().ballCoverOn = false;
+				_comeBallDefenderChaseState.ballCoverOn = false;
 			return;
 		}
 
@@ -74,10 +78,11 @@ public class DefendController : MonoSingleton<DefendController>
 		}
 
 		if (_comeBallDefender != null)
-			_comeBallDefender.GetComponent<BallChaseState>().ballCoverOn = false;
+			_comeBallDefenderChaseState.ballCoverOn = false;
 
 		coverBallDefenderDistance = minDistance;
 		_comeBallDefender = coverDefend;
+		_comeBallDefenderChaseState = _comeBallDefender.GetComponent<BallChaseState>();
 		coverDefend.GetComponent<BallChaseState>().ballCoverOn = true;
 	}
 
@@ -136,10 +141,13 @@ public class DefendController : MonoSingleton<DefendController>
 				GameManager.Instance.WaitReset();
 			}
 			else
+			{
 				GameManager.Instance.WaitReset();
+			}
 		}
 		else if(dot0 > 0 && dot1 < 0 && dot2 > 0)
 		{
+			BaseControll.Instance.TouchOutBase();
 			GameManager.Instance.ChangeState(BattingState.Batting);
 		}
 	}
@@ -169,6 +177,8 @@ public class DefendController : MonoSingleton<DefendController>
 		if (state == BattingState.Batting)
 		{
 			_defendOn = true;
+			_ball = GameManager.Instance.BallObject.GetComponent<Ball>();
+			_ball = GameManager.Instance.BallObject.GetComponent<Ball>();
 		}
 	}
 

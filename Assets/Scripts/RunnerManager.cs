@@ -11,9 +11,18 @@ public class RunnerManager : MonoSingleton<RunnerManager>
 	public event Action<Runner> runEnd;
 
 	public Action<Runner> onBaseOn;
+
+	public bool fly = false;
+
 	private void Start()
 	{
-		
+		GameManager.Instance.onStateChange += ResetFly;
+	}
+
+	private void ResetFly(BattingState state)
+	{
+		if (state == BattingState.Idle)
+			fly = false;
 	}
 
 	public void AddRunner(Runner runner)

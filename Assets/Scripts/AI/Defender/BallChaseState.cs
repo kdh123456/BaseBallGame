@@ -59,7 +59,8 @@ public class BallChaseState : DefendState
 	{
 		if (state == BattingState.Idle)
 		{
-			_agent.isStopped = true;
+			if (_agent.isActiveAndEnabled)
+				_agent.isStopped = true;
 			_animator.SetBool("Chase", false);
 			ballCoverOn = false;
 			_coverBall = null;

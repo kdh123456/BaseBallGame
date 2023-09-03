@@ -14,6 +14,10 @@ public class IfDefndingState : DefendState
 	public override void StateOn()
 	{
 		_agent.isStopped = true;
+		_animator.SetBool("Chase", false);
+		_animator.SetBool("Catch", false);
+		_animator.SetBool("Fly", false);
+		_animator.SetBool("Throw", false);
 	}
 
 	public override bool IsStateOn()

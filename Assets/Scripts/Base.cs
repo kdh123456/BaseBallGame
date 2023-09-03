@@ -13,12 +13,11 @@ public class Base : MonoBehaviour
 	public GameObject enemybasePos;
 	public GameObject playerbasePos;
 
-	private bool _haveRunner = false;
-	public bool HaveRunner => _haveRunner;
+	public bool HaveRunner => _inSideRunner != null;
 	public Runner runner => _inSideRunner;
-	private Runner _inSideRunner;
+	public Runner _inSideRunner;
 
-	private Runner _comeRunner = null;
+	public Runner _comeRunner = null;
 	public bool Running => _comeRunner != null;
 
 	private Defend _defender;
@@ -34,8 +33,8 @@ public class Base : MonoBehaviour
 	private bool _isHomeRun = false;
 	public bool _isHomeBase = false;
 
-	private bool _isOnTouchAndOutBase = false;
-	private bool _touch = false;
+	public bool _isOnTouchAndOutBase = false;
+	public bool _touch = false;
 	public bool OnAOutBase => _isOnTouchAndOutBase;
 
 	private void Start()
@@ -152,10 +151,8 @@ public class Base : MonoBehaviour
 
 			if (_isHomeBase)
 			{
-				if (BaseControll.Instance.BaseComeRunnerHave())
-				{
+				if (runer == BaseControll.Instance.HomrRunRunner)
 					GameManager.Instance.WaitReset();
-				}
 			}
 		}
 		if (_isHomeBase)
@@ -163,7 +160,6 @@ public class Base : MonoBehaviour
 			GameManager.Instance.AddScore();
 			runer.DestroyRunner();
 		}
-		_haveRunner = true;
 		_inSideRunner = runer;
 
 	}
@@ -180,7 +176,6 @@ public class Base : MonoBehaviour
 
 	public void ExitBase()
 	{
-		_haveRunner = false;
 		_inSideRunner = null;
 	}
 	public float BaseRunnerDistance()
@@ -193,7 +188,10 @@ public class Base : MonoBehaviour
 	public void HomeRunEnd()
 	=> _isHomeRun = false;
 
-	public void OnTouchBase(bool isOnTouch) => _isOnTouchAndOutBase = isOnTouch; 
+	public void OnTouchBase(bool isOnTouch)
+	{
+		_isOnTouchAndOutBase = isOnTouch;
+	}
 
 	public void OnTouch()
 	{
@@ -206,15 +204,16 @@ public class Base : MonoBehaviour
 
 	private void ResetBase(BattingState state)
 	{
-		if (state == BattingState.Batting)
+		if (state == BattingState.Idle)
 		{
-			_haveRunner = false;
-			_inSideRunner = null;
-			_comeRunner = null;
-			_defender = null;
+			//_inSideRunner = null;
+			//_comeRunner = null;
+			//_defender = null;
 			_baseCover = false;
 			_comeDefender = null;
 			_isHomeRun = false;
+			_isOnTouchAndOutBase = false;
+			_touch = false;
 		}
 	}
 }

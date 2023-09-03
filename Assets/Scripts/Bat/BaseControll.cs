@@ -14,6 +14,10 @@ public class BaseControll : MonoSingleton<BaseControll>
 
 	public Base HomeRunBase => _homeRunBase;
 
+	private Runner _homeRunRunner;
+
+	public Runner HomrRunRunner => _homeRunRunner;
+
 	public event Action _homeRun;
 
 	public void Start()
@@ -28,7 +32,6 @@ public class BaseControll : MonoSingleton<BaseControll>
 		}
 
 		GameManager.Instance.onStateChange += HomeRunEnd;
-		GameManager.Instance.onStateChange += TouchOutBase;
 		GameManager.Instance.onHomeRun += HomeRun;
 	}
 
@@ -70,7 +73,10 @@ public class BaseControll : MonoSingleton<BaseControll>
 	{
 		foreach (Base bases in _bases)
 		{
-			if (bases.Running || bases.HaveDefender)
+			if(bases._isHomeBase)
+				continue;
+
+			if (bases.Running || bases.HaveRunner)
 				return true;
 		}
 
@@ -95,8 +101,10 @@ public class BaseControll : MonoSingleton<BaseControll>
 		return false;
 	}
 
-	public Base ThrowBaseReturn(Base tsBase = null)
+	public Base ThrowBaseReturn(Vector3 vec, Base tsBase = null)
 	{
+		float distance = 999f;
+		Base bases = null;
 		foreach (Base defBase in _bases)
 		{
 			if (tsBase == defBase)
@@ -104,13 +112,16 @@ public class BaseControll : MonoSingleton<BaseControll>
 				continue;
 			}
 
-			if(defBase.Running && defBase.HaveDefender)
+			float dis = Vector3.Distance(defBase.transform.position, vec);
+
+			if (distance > Vector3.Distance(defBase.transform.position, vec) && defBase.Running && defBase.HaveDefender)
 			{
-				return defBase;
+				bases = defBase;
+				distance = dis;
 			}
 		}
 
-		return null;
+		return bases;
 	}
 
 	public void HomeRun()
@@ -119,6 +130,7 @@ public class BaseControll : MonoSingleton<BaseControll>
 		{
 			_bases[i].HomeRun();
 		}
+		_homeRunRunner = RunnerManager.Instance.BattingRunner();
 	}
 
 	private void HomeRunEnd(BattingState state)
@@ -132,16 +144,14 @@ public class BaseControll : MonoSingleton<BaseControll>
 		}
 	}
 
-	private void TouchOutBase(BattingState state)
+	public void TouchOutBase()
 	{
-		if (state == BattingState.Batting)
+		_bases[0].OnTouchBase(true);
+		for (int i = 1; i < 4; i++)
 		{
-			for (int i = 0; i < 4; i++)
+			if (_bases[i-1].HaveRunner)
 			{
-				if(_bases[i].HaveRunner && i > 0)
-				{
-					_bases[i - 1].OnTouchBase(true);
-				}
+				_bases[i].OnTouchBase(true);
 			}
 		}
 	}

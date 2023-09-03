@@ -10,6 +10,12 @@ public class BatterState : State
     [SerializeField]
     private GameObject _batObject;
 
+	[SerializeField]
+	private Pitching _pitch;
+
+	[SerializeField]
+	private float[] time;
+
 	private Batter _batter;
 
 	private GameObject _ballObject => GameManager.Instance.BallObject;
@@ -27,7 +33,17 @@ public class BatterState : State
 		if(GameManager.Instance.State == BattingState.Pitching)
 		{
 			if (Vector3.Distance(_ballObject.transform.position,
-				this.transform.position) < 8 && !_isBat)
+				this.transform.position) < time[(int)PitchType.FourSeamFastBall] && !_isBat && _pitch.Type == PitchType.FourSeamFastBall)
+			{
+				return true;
+			}
+			else if(Vector3.Distance(_ballObject.transform.position,
+				this.transform.position) < time[(int)PitchType.SliderBall] && !_isBat && _pitch.Type == PitchType.SliderBall)
+			{
+				return true;
+			}
+			else if (Vector3.Distance(_ballObject.transform.position,
+	this.transform.position) < time[(int)PitchType.CurveBall] && !_isBat && _pitch.Type == PitchType.CurveBall)
 			{
 				return true;
 			}

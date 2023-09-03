@@ -38,12 +38,11 @@ public class Runner : MonoBehaviour
 	private void Start()
 	{
 		_navMeshAgent = GetComponent<NavMeshAgent>();
-		Debug.Log(_navMeshAgent);
 	}
 
 	private void OnDestroy()
 	{
-		if(GameManager.Instance != null)
+		if (GameManager.Instance != null)
 		{
 			GameManager.Instance.onStateChange -= Run;
 			GameManager.Instance.onChangeGameMode -= DestroyRunner;
@@ -52,7 +51,7 @@ public class Runner : MonoBehaviour
 
 	private void Update()
 	{
-		if(Vector3.Distance(this.transform.position, _navMeshAgent.destination) < 1)
+		if (Vector3.Distance(this.transform.position, _navMeshAgent.destination) < 1)
 		{
 			isRun = false;
 		}
@@ -69,6 +68,10 @@ public class Runner : MonoBehaviour
 
 	public void RunBase()
 	{
+		//if (runIndex != 0)
+		//	if (RunnerManager.Instance.fly && !GameManager.Instance.IsHomeRun)
+		//		return;
+
 		if (runIndex != 0)
 		{
 			Base currentbase = BaseControll.Instance.BaseReturn(runIndex);

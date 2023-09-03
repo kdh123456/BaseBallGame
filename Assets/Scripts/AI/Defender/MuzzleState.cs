@@ -67,10 +67,10 @@ public class MuzzleState : DefendState
 	public override void StateOn()
 	{
 		Collider disCol = DisColliderCheck(ballLayerMask, 1f);
-
-		Ball disball = disCol?.GetComponent<Ball>();
-		if (disball == null)
+		if (disCol == null)
 			return;
+
+		Ball disball = disCol.GetComponent<Ball>();
 
 		if (disball.Flying)
 		{
@@ -91,7 +91,8 @@ public class MuzzleState : DefendState
 	{
 		if(state == BattingState.Idle)
 		{
-			_agent.isStopped = true;
+			if (_agent.isActiveAndEnabled)
+				_agent.isStopped = true;
 			_animator.SetBool("Catch", false);
 			_animator.SetBool("Chase", false);
 			_isMuzzle = false;

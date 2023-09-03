@@ -31,6 +31,7 @@ public class FuturePathState : DefendState
 		{
 			_isFuturePath = false;
 			_animator.SetBool("Chase", false);
+			Debug.Log("end");
 		}
 	}
 

@@ -26,8 +26,6 @@ public class RunnerMap : MonoBehaviour
 		{
 			int index = run.Index;
 			int nextIndex = index+1;
-			Debug.Log(nextIndex);
-			Debug.Log(index);
 			run.SetRun(run.runnerObject, _bases[index].transform.position, _bases[nextIndex].transform.position, nextIndex);
 		}
 	}

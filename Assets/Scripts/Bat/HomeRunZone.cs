@@ -6,11 +6,15 @@ public class HomeRunZone : MonoBehaviour
 {
 	public void OnCollisionEnter(Collision collision)
 	{
+
 		if (collision.transform.tag == "Ball"
-			&& GameManager.Instance.State == BattingState.Batting && collision.gameObject.GetComponent<Ball>().Flying)
+			&& GameManager.Instance.State == BattingState.Batting)
 		{
-			CameraController.Instance.HomeRunCameraSet(RunnerManager.Instance.BattingRunner().gameObject);
-			GameManager.Instance.HomeRun();
+			if(collision.gameObject.GetComponent<Ball>().Flying)
+			{
+				CameraController.Instance.HomeRunCameraSet(RunnerManager.Instance.BattingRunner().gameObject);
+				GameManager.Instance.HomeRun();
+			}
 		}
 	}
 }
